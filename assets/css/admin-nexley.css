@@ -1397,3 +1397,529 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   color: var(--nx-text-muted);
   margin: 0;
 }
+
+/* ==========================================================================
+   DRAG-AND-DROP FORM BUILDER (SCOPED ADMIN)
+   ========================================================================== */
+
+.nexley-builder {
+  background: #ffffff;
+  border: 1px solid var(--nx-border);
+  border-radius: var(--nx-radius);
+  margin-top: 20px;
+}
+
+.nexley-builder-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--nx-border);
+  background: #f8fafc;
+  padding: 8px 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.nexley-builder-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.nexley-tab-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  border-radius: var(--nx-radius);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.nexley-tab-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.nexley-tab-btn.is-active {
+  background: #ffffff;
+  border-color: var(--nx-border);
+  color: #0f172a;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.nexley-builder-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Builder Layout (Dynamic Flex: Palette, Expanding Canvas, Drawer) */
+.nexley-builder-grid {
+  display: flex;
+  min-height: 600px;
+  width: 100%;
+  background: #ffffff;
+}
+
+/* Field Palette (Left) */
+.nexley-palette {
+  width: 250px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--nx-border);
+  background: #f8fafc;
+  padding: 16px;
+  overflow-y: auto;
+  max-height: 800px;
+  box-sizing: border-box;
+}
+
+.nexley-palette-search-wrap {
+  margin-bottom: 16px;
+}
+
+.nexley-palette-group {
+  margin-bottom: 20px;
+}
+
+.nexley-palette-group-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin: 0 0 8px 0;
+  font-weight: 700;
+}
+
+.nexley-palette-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nexley-palette-item {
+  background: #ffffff;
+  border: 1px solid var(--nx-border);
+  padding: 8px 12px;
+  border-radius: var(--nx-radius);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  cursor: grab;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.nexley-palette-item:hover {
+  border-color: #94a3b8;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+.nexley-palette-item:active {
+  cursor: grabbing;
+}
+
+.nexley-palette-item-title {
+  flex: 1;
+}
+
+.nexley-add-field-btn {
+  background: #f1f5f9;
+  border: 1px solid var(--nx-border);
+  border-radius: 3px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Canvas Area (Center) */
+.nexley-canvas-area {
+  flex: 1;
+  min-width: 0;
+  padding: 24px;
+  background: #ffffff;
+  overflow-y: auto;
+  max-height: 800px;
+  box-sizing: border-box;
+}
+
+.nexley-canvas-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--nx-border);
+  padding-bottom: 12px;
+}
+
+.nexley-canvas-heading {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.nexley-canvas-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.nexley-canvas-row {
+  border: 1px solid var(--nx-border);
+  border-radius: var(--nx-radius);
+  background: #ffffff;
+  padding: 12px;
+}
+
+.nexley-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.nexley-row-title {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.nexley-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.nexley-badge--complete {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.nexley-badge--warning {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.nexley-row-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--nexley-cols, 12), minmax(0, 1fr));
+  gap: 12px;
+  min-height: 60px;
+  padding: 4px;
+}
+
+.nexley-row-grid.is-dragover {
+  background: #f8fafc;
+  outline: 2px dashed #3b82f6;
+}
+
+.nexley-canvas-field {
+  grid-column: span var(--span, 12);
+  border: 1px solid var(--nx-border);
+  border-radius: var(--nx-radius);
+  background: #ffffff;
+  padding: 8px 12px;
+  position: relative;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.nexley-canvas-field:hover {
+  border-color: #94a3b8;
+}
+
+.nexley-canvas-field.is-selected {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.nexley-field-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.nexley-field-name {
+  font-weight: 600;
+  color: #0f172a;
+  flex: 1;
+}
+
+.nexley-field-span-badge {
+  background: #f1f5f9;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  color: #475569;
+}
+
+.nexley-field-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.nexley-btn-ctrl {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 2px 4px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.nexley-btn-ctrl:hover {
+  color: #0f172a;
+}
+
+.nexley-field-resize-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  cursor: col-resize;
+  background: transparent;
+}
+
+.nexley-field-resize-handle:hover {
+  background: #2563eb;
+}
+
+.nexley-canvas-footer {
+  margin-top: 20px;
+}
+
+/* Settings Drawer (Right) */
+.nexley-settings-drawer {
+  width: 320px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--nx-border);
+  background: #f8fafc;
+  padding: 20px;
+  overflow-y: auto;
+  max-height: 800px;
+  box-sizing: border-box;
+}
+
+.nexley-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--nx-border);
+  padding-bottom: 12px;
+}
+
+.nexley-drawer-header h3 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.nexley-drawer-close {
+  background: transparent;
+  border: 0;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.nexley-drawer-group {
+  margin-bottom: 14px;
+}
+
+.nexley-drawer-group label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+/* Emails & Actions Tab */
+.nexley-actions-view {
+  padding: 24px;
+}
+
+.nexley-actions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.nexley-action-card {
+  border: 1px solid var(--nx-border);
+  border-radius: var(--nx-radius);
+  background: #ffffff;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.nexley-action-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 8px;
+}
+
+/* Settings Tab */
+.nexley-settings-view {
+  padding: 24px;
+}
+
+.nexley-styling-modes-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.nexley-style-card {
+  border: 1px solid var(--nx-border);
+  border-radius: var(--nx-radius);
+  padding: 16px;
+  background: #ffffff;
+  display: flex;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.nexley-style-card input[type="radio"] {
+  margin-top: 3px;
+}
+
+.nexley-style-card-body strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.nexley-style-card-body p {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Preview Tab */
+.nexley-preview-wrap {
+  padding: 24px;
+  background: #f1f5f9;
+  min-height: 500px;
+}
+
+.nexley-preview-toolbar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.nexley-device-switcher .button.is-active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+.nexley-preview-viewport {
+  margin: 0 auto;
+  background: #ffffff;
+  border: 1px solid var(--nx-border);
+  border-radius: 8px;
+  padding: 32px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+  transition: max-width 0.2s ease;
+}
+
+/* ==========================================================================
+   ENTRIES MANAGEMENT & SUBMISSIONS DETAIL VIEW
+   ========================================================================== */
+
+/* Status Pills */
+.nexley-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  border-radius: 9999px;
+  text-transform: capitalize;
+}
+
+.nexley-status--unread {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.nexley-status--read {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.nexley-status--spam {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.nexley-status--trash {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+/* Detail Screen Layout */
+.nexley-entry-detail-wrap .nexley-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+@media (max-width: 960px) {
+  .nexley-entry-detail-wrap .nexley-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.nexley-detail-table th,
+.nexley-detail-table td {
+  padding: 14px 16px !important;
+}
+
+.nexley-detail-label {
+  vertical-align: top;
+  background: #fafafa;
+}
+
+.nexley-detail-value {
+  vertical-align: top;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.nexley-entry-danger-zone {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.nexley-export-csv-btn {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 4px;
+}
+
+

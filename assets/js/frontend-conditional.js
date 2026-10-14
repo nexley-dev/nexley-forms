@@ -1,0 +1,101 @@
+/**
+ * Nexley Forms - Modular Conditional Logic Engine
+ * Loaded only if form schema defines conditional rules.
+ * Budget: Under 1.5 KB gzipped.
+ */
+(() => {
+  'use strict';
+
+  function getFieldValue(form, fieldName) {
+    const inputs = form.querySelectorAll(`[name="${fieldName}"], [name="${fieldName}[]"]`);
+    if (!inputs.length) return '';
+
+    const first = inputs[0];
+    if (first.type === 'radio') {
+      const checked = form.querySelector(`[name="${fieldName}"]:checked`);
+      return checked ? checked.value : '';
+    }
+    if (first.type === 'checkbox') {
+      const checked = Array.from(form.querySelectorAll(`[name="${fieldName}"]:checked, [name="${fieldName}[]"]:checked`));
+      return checked.map(c => c.value);
+    }
+    return first.value;
+  }
+
+  function testRule(form, rule) {
+    const val = getFieldValue(form, rule.field);
+    const target = rule.value;
+    const op = rule.operator || 'equals';
+
+    if (Array.isArray(val)) {
+      if (op === 'contains') return val.includes(target);
+      if (op === 'is_empty') return val.length === 0;
+      if (op === 'is_not_empty') return val.length > 0;
+      return val.includes(target);
+    }
+
+    const strVal = String(val == null ? '' : val).trim().toLowerCase();
+    const strTarget = String(target == null ? '' : target).trim().toLowerCase();
+
+    switch (op) {
+      case 'equals': return strVal === strTarget;
+      case 'not_equals': return strVal !== strTarget;
+      case 'contains': return strVal.includes(strTarget);
+      case 'is_empty': return strVal === '';
+      case 'is_not_empty': return strVal !== '';
+      case 'greater_than': return Number(strVal) > Number(strTarget);
+      case 'less_than': return Number(strVal) < Number(strTarget);
+      default: return strVal === strTarget;
+    }
+  }
+
+  function evaluateLogic(form) {
+    const conditionalFields = form.querySelectorAll('[data-logic]');
+    conditionalFields.forEach((field) => {
+      let cfg;
+      try {
+        cfg = JSON.parse(field.dataset.logic);
+      } catch (e) {
+        return;
+      }
+      if (!cfg || !Array.isArray(cfg.rules) || !cfg.rules.length) return;
+
+      const isAll = (cfg.match || 'all') === 'all';
+      const isMet = isAll
+        ? cfg.rules.every(r => testRule(form, r))
+        : cfg.rules.some(r => testRule(form, r));
+
+      const shouldShow = (cfg.action || 'show') === 'show' ? isMet : !isMet;
+
+      field.hidden = !shouldShow;
+      if (shouldShow) {
+        field.removeAttribute('aria-hidden');
+      } else {
+        field.setAttribute('aria-hidden', 'true');
+      }
+
+      // Disable or enable form controls inside so browser validation ignores hidden inputs
+      field.querySelectorAll('input, select, textarea').forEach((ctrl) => {
+        ctrl.disabled = !shouldShow;
+      });
+    });
+  }
+
+  function initFormLogic(form) {
+    evaluateLogic(form);
+    form.addEventListener('input', () => evaluateLogic(form), false);
+    form.addEventListener('change', () => evaluateLogic(form), false);
+  }
+
+  function initAll() {
+    document.querySelectorAll('.nexley-forms').forEach((form) => {
+      if (form.querySelector('[data-logic]')) initFormLogic(form);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+  } else {
+    initAll();
+  }
+})();

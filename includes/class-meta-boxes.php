@@ -28,38 +28,21 @@ final class Meta_Boxes {
         add_action('add_meta_boxes', [self::class, 'register_meta_boxes']);
         add_action('save_post_' . Post_Types::CPT_FORM, [self::class, 'save_form_meta']);
         add_action('edit_form_after_title', [self::class, 'render_shortcode_notice']);
+        Builder::init();
     }
 
     /**
      * Register meta boxes.
      */
     public static function register_meta_boxes(): void {
-        // Form post type meta boxes.
+        // Form post type meta box: Full Drag-and-Drop Builder
         add_meta_box(
             'nexley_meta_form_editor',
-            __('Form Editor', 'nexley-forms'),
+            __('Nexley Form Builder', 'nexley-forms'),
             [self::class, 'render_editor_box'],
             Post_Types::CPT_FORM,
             'normal',
             'high'
-        );
-
-        add_meta_box(
-            'nexley_meta_admin_mail',
-            __('Admin Notification', 'nexley-forms'),
-            [self::class, 'render_admin_notification_box'],
-            Post_Types::CPT_FORM,
-            'normal',
-            'default'
-        );
-
-        add_meta_box(
-            'nexley_meta_client_autoresponder',
-            __('Client Auto-Responder', 'nexley-forms'),
-            [self::class, 'render_client_autoresponder_box'],
-            Post_Types::CPT_FORM,
-            'normal',
-            'default'
         );
 
         // Entry post type meta box.
@@ -104,102 +87,7 @@ final class Meta_Boxes {
      * @param \WP_Post $post
      */
     public static function render_editor_box(\WP_Post $post): void {
-        wp_nonce_field(self::NONCE_ACTION, self::NONCE_NAME);
-
-        $content = (string) get_post_meta($post->ID, '_nexley_form_content', true);
-        if ($content === '' && $post->post_status === 'auto-draft') {
-            $content = Form_Parser::get_default_template();
-        }
-
-        ?>
-        <div class="nexley-editor-wrap">
-            <div class="nexley-tag-generator-bar" role="toolbar" aria-label="<?php esc_attr_e('Tag Generators', 'nexley-forms'); ?>">
-                <span class="nexley-toolbar-label"><?php esc_html_e('Insert Tag:', 'nexley-forms'); ?></span>
-                <button type="button" class="button nexley-tag-btn" data-tag-type="text">
-                    <span class="dashicons dashicons-edit"></span> <?php esc_html_e('Text', 'nexley-forms'); ?>
-                </button>
-                <button type="button" class="button nexley-tag-btn" data-tag-type="email">
-                    <span class="dashicons dashicons-email"></span> <?php esc_html_e('Email', 'nexley-forms'); ?>
-                </button>
-                <button type="button" class="button nexley-tag-btn" data-tag-type="url">
-                    <span class="dashicons dashicons-admin-links"></span> <?php esc_html_e('URL', 'nexley-forms'); ?>
-                </button>
-                <button type="button" class="button nexley-tag-btn" data-tag-type="select">
-                    <span class="dashicons dashicons-menu"></span> <?php esc_html_e('Select', 'nexley-forms'); ?>
-                </button>
-                <button type="button" class="button nexley-tag-btn" data-tag-type="textarea">
-                    <span class="dashicons dashicons-editor-paragraph"></span> <?php esc_html_e('Textarea', 'nexley-forms'); ?>
-                </button>
-                <button type="button" class="button nexley-tag-btn nexley-tag-btn--submit" data-tag-type="submit">
-                    <span class="dashicons dashicons-arrow-right-alt"></span> <?php esc_html_e('Submit', 'nexley-forms'); ?>
-                </button>
-            </div>
-
-            <div class="nexley-textarea-container">
-                <textarea 
-                    name="nexley_form_content" 
-                    id="nexley_form_content" 
-                    rows="16" 
-                    class="large-text code" 
-                    spellcheck="false"
-                    placeholder="<?php esc_attr_e('Write HTML and pseudo-shortcodes here...', 'nexley-forms'); ?>"
-                ><?php echo esc_textarea($content); ?></textarea>
-            </div>
-
-            <p class="description">
-                <?php esc_html_e('You can write standard HTML markup (divs, labels, spans) freely around pseudo-shortcode tags.', 'nexley-forms'); ?>
-            </p>
-        </div>
-
-        <!-- Tag Generator Modal (Rendered on-demand via JS) -->
-        <div id="nexley-tag-modal" class="nexley-modal-overlay" style="display:none;" aria-hidden="true" role="dialog" aria-labelledby="nexley-modal-title">
-            <div class="nexley-modal-content">
-                <div class="nexley-modal-header">
-                    <h3 id="nexley-modal-title"><?php esc_html_e('Generate Form Tag', 'nexley-forms'); ?></h3>
-                    <button type="button" class="nexley-modal-close" aria-label="<?php esc_attr_e('Close dialog', 'nexley-forms'); ?>">&times;</button>
-                </div>
-                <div class="nexley-modal-body">
-                    <div class="nexley-modal-field nexley-modal-field--required">
-                        <label>
-                            <input type="checkbox" id="nexley_modal_required" value="1" />
-                            <strong><?php esc_html_e('Required field (*)', 'nexley-forms'); ?></strong>
-                        </label>
-                    </div>
-
-                    <div class="nexley-modal-field nexley-modal-field--name">
-                        <label for="nexley_modal_name"><strong><?php esc_html_e('Field Name', 'nexley-forms'); ?></strong></label>
-                        <input type="text" id="nexley_modal_name" class="regular-text" placeholder="e.g. client-name" />
-                        <span class="description"><?php esc_html_e('Unique identifier used in email tags: {field-name}', 'nexley-forms'); ?></span>
-                    </div>
-
-                    <div class="nexley-modal-field nexley-modal-field--placeholder">
-                        <label for="nexley_modal_placeholder"><strong><?php esc_html_e('Placeholder / Default Text', 'nexley-forms'); ?></strong></label>
-                        <input type="text" id="nexley_modal_placeholder" class="regular-text" placeholder="e.g. Enter your name" />
-                    </div>
-
-                    <div class="nexley-modal-field nexley-modal-field--options" style="display:none;">
-                        <label for="nexley_modal_options"><strong><?php esc_html_e('Options (one per line)', 'nexley-forms'); ?></strong></label>
-                        <textarea id="nexley_modal_options" rows="4" class="large-text" placeholder="Option 1&#10;Option 2&#10;Option 3"></textarea>
-                        <span class="description"><?php esc_html_e('Tip: Use "Value|Label" syntax if you want separate values.', 'nexley-forms'); ?></span>
-                    </div>
-
-                    <div class="nexley-modal-field nexley-modal-field--submit-label" style="display:none;">
-                        <label for="nexley_modal_submit_label"><strong><?php esc_html_e('Button Label', 'nexley-forms'); ?></strong></label>
-                        <input type="text" id="nexley_modal_submit_label" class="regular-text" value="Send Message" />
-                    </div>
-
-                    <div class="nexley-modal-preview-box">
-                        <label><strong><?php esc_html_e('Tag Preview:', 'nexley-forms'); ?></strong></label>
-                        <code id="nexley_modal_preview">[text* client-name]</code>
-                    </div>
-                </div>
-                <div class="nexley-modal-footer">
-                    <button type="button" class="button button-large nexley-modal-cancel"><?php esc_html_e('Cancel', 'nexley-forms'); ?></button>
-                    <button type="button" class="button button-primary button-large" id="nexley_modal_insert"><?php esc_html_e('Insert Tag', 'nexley-forms'); ?></button>
-                </div>
-            </div>
-        </div>
-        <?php
+        Builder::render($post);
     }
 
     /**

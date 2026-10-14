@@ -23,6 +23,10 @@ final class Post_Types {
     public static function init(): void {
         add_action('init', [self::class, 'register_post_types']);
 
+        if (is_admin()) {
+            add_action('admin_init', [self::class, 'redirect_legacy_cpt_entries_screen']);
+        }
+
         // nexley_form list table columns.
         add_filter('manage_' . self::CPT_FORM . '_posts_columns', [self::class, 'form_table_columns']);
         add_action('manage_' . self::CPT_FORM . '_posts_custom_column', [self::class, 'render_form_column'], 10, 2);
@@ -101,7 +105,7 @@ final class Post_Types {
             'public'             => false,
             'publicly_queryable' => false,
             'show_ui'            => true,
-            'show_in_menu'       => 'edit.php?post_type=' . self::CPT_FORM,
+            'show_in_menu'       => false,
             'query_var'          => false,
             'rewrite'            => false,
             'capability_type'    => 'post',
@@ -160,8 +164,9 @@ final class Post_Types {
         } elseif ($column === 'entries') {
             $count = self::get_form_entries_count($post_id);
             $url   = add_query_arg([
-                'post_type'      => self::CPT_ENTRY,
-                'nexley_form_id' => $post_id,
+                'post_type' => self::CPT_FORM,
+                'page'      => 'nexley-entries',
+                'form_id'   => $post_id,
             ], admin_url('edit.php'));
 
             echo '<a href="' . esc_url($url) . '" class="nexley-entry-count-badge">';
@@ -309,27 +314,29 @@ final class Post_Types {
     }
 
     /**
-     * Get count of entries for a given form ID.
+     * Get count of entries for a given form ID using high-performance custom DB table.
      *
      * @param int $form_id
      * @return int
      */
     public static function get_form_entries_count(int $form_id): int {
-        $query = new \WP_Query([
-            'post_type'      => self::CPT_ENTRY,
-            'post_status'    => 'publish',
-            'posts_per_page' => 1,
-            'fields'         => 'ids',
-            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-            'meta_query'     => [
-                [
-                    'key'     => '_nexley_form_id',
-                    'value'   => $form_id,
-                    'compare' => '=',
-                ],
-            ],
-        ]);
+        $counts = DB::get_status_counts($form_id);
+        return $counts['all'] ?? 0;
+    }
 
-        return (int) $query->found_posts;
+    /**
+     * Redirect direct navigation from legacy CPT entries screen to custom DB table entries screen.
+     */
+    public static function redirect_legacy_cpt_entries_screen(): void {
+        global $pagenow;
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        if ($pagenow === 'edit.php' && isset($_GET['post_type']) && $_GET['post_type'] === self::CPT_ENTRY) {
+            $target_url = admin_url('edit.php?post_type=' . self::CPT_FORM . '&page=nexley-entries');
+            if (!empty($_GET['nexley_form_id'])) {
+                $target_url = add_query_arg('form_id', absint($_GET['nexley_form_id']), $target_url);
+            }
+            wp_safe_redirect($target_url);
+            exit;
+        }
     }
 }

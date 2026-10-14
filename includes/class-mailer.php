@@ -8,181 +8,213 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Handles email notifications and auto-responders with dynamic tag replacement
- * and strict compatibility with WP Mail SMTP.
+ * Handles multiple email notifications with conditional routing, dynamic tag replacement,
+ * header-injection protection, and WP Mail SMTP compatibility.
  */
 final class Mailer {
 
     /**
-     * Send both Admin Notification and Client Auto-Responder (if enabled).
+     * Process and dispatch all notifications configured for a form submission.
      *
-     * @param int $form_id
+     * @param int                  $form_id
      * @param array<string, mixed> $submitted_data
-     * @return array{admin_mail_sent: bool, autoresponder_sent: bool}
+     * @param array<string, mixed> $schema
+     * @return array{sent_count: int, failed_count: int}
      */
-    public static function process_submission(int $form_id, array $submitted_data): array {
-        $admin_sent = self::send_admin_notification($form_id, $submitted_data);
-        $client_sent = self::send_client_autoresponder($form_id, $submitted_data);
+    public static function process_submission(int $form_id, array $submitted_data, array $schema = [], string $override_to = ''): array {
+        if (empty($schema)) {
+            $schema = Form_Schema::get_form_schema($form_id);
+        }
+
+        $notifications = $schema['notifications'] ?? [];
+        $sent_count    = 0;
+        $failed_count  = 0;
+
+        foreach ($notifications as $notification) {
+            // Check if notification is active
+            if (isset($notification['active']) && !$notification['active']) {
+                continue;
+            }
+
+            // Check conditional routing (skip condition if manual resend with override_to)
+            if ($override_to === '' && !self::should_send_notification($notification, $submitted_data)) {
+                continue;
+            }
+
+            if (!empty($override_to)) {
+                $notification['to'] = $override_to;
+            }
+
+            $sent = self::send_notification($notification, $form_id, $submitted_data);
+            if ($sent) {
+                $sent_count++;
+            } else {
+                $failed_count++;
+            }
+        }
 
         return [
-            'admin_mail_sent'    => $admin_sent,
-            'autoresponder_sent' => $client_sent,
+            'sent_count'   => $sent_count,
+            'failed_count' => $failed_count,
         ];
     }
 
     /**
-     * Send Admin Notification email.
+     * Evaluate conditional logic for a notification.
      *
-     * @param int $form_id
+     * @param array<string, mixed> $notification
      * @param array<string, mixed> $submitted_data
      * @return bool
      */
-    public static function send_admin_notification(int $form_id, array $submitted_data): bool {
-        $to_template      = (string) get_post_meta($form_id, '_nexley_mail_to', true);
-        $subject_template = (string) get_post_meta($form_id, '_nexley_mail_subject', true);
-        $body_template    = (string) get_post_meta($form_id, '_nexley_mail_body', true);
-        $reply_to_tag     = (string) get_post_meta($form_id, '_nexley_mail_reply_to', true);
-
-        // Fallbacks if not set.
-        if (trim($to_template) === '') {
-            $to_template = (string) get_option('admin_email');
-        }
-        if (trim($subject_template) === '') {
-            $subject_template = sprintf('[%s] New submission: {form_title}', get_bloginfo('name'));
-        }
-        if (trim($body_template) === '') {
-            $body_template = "You have received a new form submission:\n\n{_all_fields}\n\n--\nThis e-mail was sent from a contact form on {site_title} ({site_url})";
+    public static function should_send_notification(array $notification, array $submitted_data): bool {
+        $conditions = $notification['conditions'] ?? [];
+        if (empty($conditions)) {
+            return true;
         }
 
-        // Replace tags.
-        $to      = self::replace_tags($to_template, $submitted_data, $form_id);
-        $subject = self::replace_tags($subject_template, $submitted_data, $form_id);
-        $body    = self::replace_tags($body_template, $submitted_data, $form_id);
+        $match_all = ($conditions['match'] ?? 'all') === 'all';
+        $rules     = is_array($conditions['rules'] ?? null) ? $conditions['rules'] : [];
 
-        // Ensure valid destination email(s).
-        $recipients = self::parse_recipients($to);
+        if (empty($rules)) {
+            return true;
+        }
+
+        $results = [];
+        foreach ($rules as $rule) {
+            $field_name = sanitize_key($rule['field'] ?? '');
+            $operator   = $rule['operator'] ?? 'equals';
+            $expected   = (string) ($rule['value'] ?? '');
+            $actual     = $submitted_data[$field_name] ?? '';
+
+            if (is_array($actual)) {
+                $actual = implode(', ', $actual);
+            }
+            $actual = (string) $actual;
+
+            $pass = false;
+            switch ($operator) {
+                case 'equals':
+                    $pass = (strcasecmp($actual, $expected) === 0);
+                    break;
+                case 'not_equals':
+                    $pass = (strcasecmp($actual, $expected) !== 0);
+                    break;
+                case 'contains':
+                    $pass = (stripos($actual, $expected) !== false);
+                    break;
+                case 'is_empty':
+                    $pass = (trim($actual) === '');
+                    break;
+                case 'is_not_empty':
+                    $pass = (trim($actual) !== '');
+                    break;
+                default:
+                    $pass = ($actual === $expected);
+            }
+            $results[] = $pass;
+        }
+
+        return $match_all ? !in_array(false, $results, true) : in_array(true, $results, true);
+    }
+
+    /**
+     * Send a single notification email.
+     *
+     * @param array<string, mixed> $notification
+     * @param int                  $form_id
+     * @param array<string, mixed> $submitted_data
+     * @return bool
+     */
+    public static function send_notification(array $notification, int $form_id, array $submitted_data): bool {
+        $to_template      = (string) ($notification['to'] ?? '{admin_email}');
+        $subject_template = (string) ($notification['subject'] ?? sprintf('[%s] New submission: {form_title}', get_bloginfo('name')));
+        $body_template    = (string) ($notification['body'] ?? "{_all_fields}");
+        $reply_to_tag     = (string) ($notification['reply_to'] ?? '');
+
+        // Tag replacement
+        $to_resolved      = self::replace_tags($to_template, $submitted_data, $form_id);
+        $subject_resolved = self::replace_tags($subject_template, $submitted_data, $form_id);
+        $body_resolved    = self::replace_tags($body_template, $submitted_data, $form_id);
+
+        // Header injection defense: strip \r and \n from headers
+        $clean_subject = sanitize_text_field(str_replace(["\r", "\n"], '', $subject_resolved));
+
+        // Parse recipients
+        $recipients = self::parse_recipients($to_resolved);
         if (empty($recipients)) {
             $recipients = [(string) get_option('admin_email')];
         }
 
-        // Build headers.
-        $headers = [
-            'Content-Type: text/html; charset=UTF-8',
-        ];
-
-        // Determine Reply-To.
+        // Determine Reply-To
         $reply_email = '';
-        $reply_name  = '';
-
         if ($reply_to_tag !== '') {
             $resolved_reply = self::replace_tags($reply_to_tag, $submitted_data, $form_id);
             if (is_email($resolved_reply)) {
-                $reply_email = $resolved_reply;
+                $reply_email = sanitize_email($resolved_reply);
             }
         }
 
-        // Automatic fallback for reply-to from submitted email if not explicitly set.
+        // Automatic fallback for reply-to from submitted email if not explicitly matched
         if ($reply_email === '') {
-            foreach (['client-email', 'email', 'your-email'] as $key) {
-                if (!empty($submitted_data[$key]) && is_email((string) $submitted_data[$key])) {
-                    $reply_email = (string) $submitted_data[$key];
+            foreach ($submitted_data as $key => $val) {
+                if (is_string($val) && is_email($val) && stripos((string) $key, 'email') !== false) {
+                    $reply_email = sanitize_email($val);
                     break;
                 }
             }
         }
-
-        // Submitter name for reply-to.
-        foreach (['client-name', 'name', 'your-name'] as $key) {
-            if (!empty($submitted_data[$key])) {
-                $reply_name = sanitize_text_field((string) $submitted_data[$key]);
-                break;
-            }
-        }
-
-        if ($reply_email !== '') {
-            $reply_header = $reply_name !== ''
-                ? sprintf('Reply-To: "%s" <%s>', str_replace(['"', "\r", "\n"], '', $reply_name), $reply_email)
-                : sprintf('Reply-To: <%s>', $reply_email);
-            $headers[] = $reply_header;
-        }
-
-        // Format HTML content.
-        $formatted_body = self::format_html_message($body, $subject);
-
-        // Execute wp_mail() with WP Mail SMTP compatibility.
-        return wp_mail($recipients, $subject, $formatted_body, $headers);
-    }
-
-    /**
-     * Send Client Auto-Responder email if enabled.
-     *
-     * @param int $form_id
-     * @param array<string, mixed> $submitted_data
-     * @return bool
-     */
-    public static function send_client_autoresponder(int $form_id, array $submitted_data): bool {
-        $enabled = (bool) get_post_meta($form_id, '_nexley_autoresponder_enable', true);
-        if (!$enabled) {
-            return false;
-        }
-
-        $recipient_tag    = (string) get_post_meta($form_id, '_nexley_autoresponder_to', true);
-        $subject_template = (string) get_post_meta($form_id, '_nexley_autoresponder_subject', true);
-        $body_template    = (string) get_post_meta($form_id, '_nexley_autoresponder_body', true);
-
-        // Determine recipient.
-        $to_email = '';
-        if ($recipient_tag !== '') {
-            $resolved = self::replace_tags($recipient_tag, $submitted_data, $form_id);
-            if (is_email($resolved)) {
-                $to_email = $resolved;
-            }
-        }
-
-        // Fallback to submitted email fields if no custom recipient specified.
-        if ($to_email === '') {
-            foreach (['client-email', 'email', 'your-email'] as $key) {
-                if (!empty($submitted_data[$key]) && is_email((string) $submitted_data[$key])) {
-                    $to_email = (string) $submitted_data[$key];
-                    break;
-                }
-            }
-        }
-
-        if ($to_email === '' || !is_email($to_email)) {
-            return false;
-        }
-
-        if (trim($subject_template) === '') {
-            $subject_template = sprintf('Thank you for contacting %s', get_bloginfo('name'));
-        }
-        if (trim($body_template) === '') {
-            $body_template = "Hi {client-name},\n\nThank you for reaching out to us. We have received your message and will get back to you shortly.\n\nBest regards,\n{site_title}";
-        }
-
-        $subject = self::replace_tags($subject_template, $submitted_data, $form_id);
-        $body    = self::replace_tags($body_template, $submitted_data, $form_id);
 
         $headers = [
             'Content-Type: text/html; charset=UTF-8',
         ];
 
-        $admin_email = (string) get_option('admin_email');
-        if (is_email($admin_email)) {
-            $headers[] = sprintf('Reply-To: "%s" <%s>', esc_attr(get_bloginfo('name')), $admin_email);
+        if ($reply_email !== '') {
+            $headers[] = sprintf('Reply-To: <%s>', str_replace(["\r", "\n", '"', "'"], '', $reply_email));
         }
 
-        $formatted_body = self::format_html_message($body, $subject);
+        $formatted_body = self::format_html_message($body_resolved, $clean_subject);
 
-        return wp_mail($to_email, $subject, $formatted_body, $headers);
+        /**
+         * Filters notification parameters immediately before calling wp_mail().
+         *
+         * @param array{to: list<string>, subject: string, message: string, headers: list<string>} $args
+         * @param int                  $form_id
+         * @param array<string, mixed> $notification
+         */
+        $mail_args = apply_filters('nexley_forms_pre_send_notification', [
+            'to'      => $recipients,
+            'subject' => $clean_subject,
+            'message' => $formatted_body,
+            'headers' => $headers,
+        ], $form_id, $notification);
+
+        $sent = wp_mail(
+            $mail_args['to'],
+            $mail_args['subject'],
+            $mail_args['message'],
+            $mail_args['headers']
+        );
+
+        if ($sent) {
+            /**
+             * Fires after an email notification has been dispatched successfully.
+             *
+             * @param array<string, mixed> $notification
+             * @param int                  $form_id
+             * @param array<string, mixed> $submitted_data
+             */
+            do_action('nexley_forms_notification_sent', $notification, $form_id, $submitted_data);
+        }
+
+        return (bool) $sent;
     }
 
     /**
      * Replace dynamic {field} tags and system tags in template text.
      *
-     * @param string $template
+     * @param string               $template
      * @param array<string, mixed> $data
-     * @param int $form_id
+     * @param int                  $form_id
      * @return string
      */
     public static function replace_tags(string $template, array $data, int $form_id = 0): string {
@@ -190,10 +222,10 @@ final class Mailer {
             return '';
         }
 
-        // Format all fields table / list.
+        // Format all fields table
         $all_fields_html = self::generate_all_fields_list($data);
 
-        // System tags.
+        // System tags
         $system_tags = [
             '{site_title}'   => get_bloginfo('name'),
             '{site_url}'     => home_url(),
@@ -202,13 +234,13 @@ final class Mailer {
             '{form_title}'   => get_the_title($form_id) ?: sprintf('Form #%d', $form_id),
             '{date}'         => wp_date('Y-m-d'),
             '{time}'         => wp_date('H:i:s'),
-            '{ip}'           => self::get_user_ip(),
+            '{ip}'           => Security::get_client_ip(),
             '{_all_fields}'  => $all_fields_html,
         ];
 
         $output = str_replace(array_keys($system_tags), array_values($system_tags), $template);
 
-        // Dynamic field tags: {field_name}.
+        // Dynamic field tags: {field_name}
         $output = (string) preg_replace_callback('/\{([a-zA-Z0-9_-]+)\}/', static function (array $matches) use ($data): string {
             $key = $matches[1];
             if (isset($data[$key])) {
@@ -232,9 +264,6 @@ final class Mailer {
      * @return string
      */
     public static function format_html_message(string $content, string $title): string {
-        $clean_content = wpautop(make_clickable(esc_html($content)));
-
-        // If content already contains HTML tags (like <table> or <div> from {_all_fields}), preserve allowed HTML.
         $clean_content = wp_kses_post(wpautop($content));
 
         return '<!DOCTYPE html>'
@@ -279,13 +308,16 @@ final class Mailer {
 
         $html = '<table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;">';
         foreach ($data as $key => $val) {
-            // Skip internal keys.
             if (strpos((string) $key, '_nexley_') === 0) {
                 continue;
             }
 
             $label = ucwords(str_replace(['-', '_'], ' ', (string) $key));
-            $value_str = is_array($val) ? implode(', ', $val) : (string) $val;
+            if (is_array($val)) {
+                $value_str = implode(', ', array_map('strval', $val));
+            } else {
+                $value_str = (string) $val;
+            }
 
             $html .= sprintf(
                 '<tr>'
@@ -316,15 +348,5 @@ final class Mailer {
             }
         }
         return array_values(array_unique($valid));
-    }
-
-    /**
-     * Helper to get user's client IP.
-     *
-     * @return string
-     */
-    public static function get_user_ip(): string {
-        $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '127.0.0.1';
-        return $ip;
     }
 }

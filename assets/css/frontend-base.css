@@ -1,0 +1,294 @@
+/**
+ * Nexley Forms - Base Stylesheet
+ * Architecture: CSS Grid, CSS Variables, Zero-Specificity (:where), @layer nexley
+ * Budget: Under 3 KB gzipped.
+ */
+@layer nexley {
+  :where(.nexley-forms) {
+    --nexley-primary: #2563eb;
+    --nexley-primary-hover: #1d4ed8;
+    --nexley-bg: transparent;
+    --nexley-text: inherit;
+    --nexley-border: #cbd5e1;
+    --nexley-border-focus: #2563eb;
+    --nexley-radius: 4px;
+    --nexley-gap: 16px;
+    --nexley-input-bg: #ffffff;
+    --nexley-input-text: #0f172a;
+    --nexley-input-padding: 8px 12px;
+    --nexley-font: inherit;
+    --nexley-label-weight: 600;
+    --nexley-status-success-bg: #ecfdf5;
+    --nexley-status-success-text: #065f46;
+    --nexley-status-error-bg: #fef2f2;
+    --nexley-status-error-text: #991b1b;
+
+    display: grid;
+    grid-template-columns: repeat(var(--nexley-cols, 12), minmax(0, 1fr));
+    gap: var(--nexley-gap);
+    width: 100%;
+    box-sizing: border-box;
+    font-family: var(--nexley-font);
+    color: var(--nexley-text);
+  }
+
+  /* Preset: Rounded */
+  :where(.nexley-forms--preset-rounded) {
+    --nexley-radius: 12px;
+    --nexley-border: #94a3b8;
+    --nexley-primary: #6366f1;
+    --nexley-primary-hover: #4f46e5;
+  }
+
+  /* Preset: Outlined */
+  :where(.nexley-forms--preset-outlined) {
+    --nexley-radius: 0px;
+    --nexley-border: #000000;
+    --nexley-border-focus: #000000;
+    --nexley-primary: #000000;
+    --nexley-primary-hover: #333333;
+    --nexley-label-weight: 700;
+  }
+
+  /* Preset: Dark */
+  :where(.nexley-forms--preset-dark) {
+    --nexley-bg: #0f172a;
+    --nexley-text: #f8fafc;
+    --nexley-input-bg: #1e293b;
+    --nexley-input-text: #f8fafc;
+    --nexley-border: #334155;
+    --nexley-border-focus: #38bdf8;
+    --nexley-primary: #38bdf8;
+    --nexley-primary-hover: #0284c7;
+    --nexley-status-success-bg: #064e3b;
+    --nexley-status-success-text: #a7f3d0;
+    --nexley-status-error-bg: #7f1d1d;
+    --nexley-status-error-text: #fecaca;
+    background-color: var(--nexley-bg);
+    padding: 24px;
+    border-radius: var(--nexley-radius);
+  }
+
+  :where(.nexley-forms *, .nexley-forms *::before, .nexley-forms *::after) {
+    box-sizing: border-box;
+  }
+
+  /* Flat sibling grid layout: each field spans via inline --span */
+  :where(.nexley-forms__group) {
+    grid-column: span min(var(--span, 12), var(--nexley-cols, 12));
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  /* Labels */
+  :where(.nexley-forms__label),
+  :where(.nexley-forms__legend) {
+    font-size: 0.875rem;
+    font-weight: var(--nexley-label-weight);
+    color: var(--nexley-text);
+    margin: 0;
+    padding: 0;
+    display: block;
+  }
+
+  /* Inputs, Textareas, Selects */
+  :where(.nexley-forms__field, .nexley-forms__control) {
+    width: 100%;
+    padding: var(--nexley-input-padding);
+    font-size: 1rem;
+    line-height: 1.5;
+    font-family: inherit;
+    color: var(--nexley-input-text);
+    background-color: var(--nexley-input-bg);
+    border: 1px solid var(--nexley-border);
+    border-radius: var(--nexley-radius);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    appearance: none;
+  }
+
+  :where(.nexley-forms__field:focus, .nexley-forms__control:focus) {
+    outline: none;
+    border-color: var(--nexley-border-focus);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  }
+
+  :where(.nexley-forms__field[aria-invalid="true"], .nexley-forms__control[aria-invalid="true"]),
+  :where(.nexley-forms__field.is-invalid, .nexley-forms__control.is-invalid) {
+    border-color: #ef4444;
+  }
+
+  :where(textarea.nexley-forms__field, textarea.nexley-forms__control) {
+    min-height: 96px;
+    resize: vertical;
+  }
+
+  :where(select.nexley-forms__field, select.nexley-forms__control) {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right 8px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 32px;
+  }
+
+  /* Fieldsets for Compound and Choice Groups */
+  :where(fieldset.nexley-forms__group) {
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  :where(.nexley-forms__choice-group) {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  :where(.nexley-forms__choice-item) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9375rem;
+    cursor: pointer;
+  }
+
+  :where(.nexley-forms__choice-item input[type="radio"]),
+  :where(.nexley-forms__choice-item input[type="checkbox"]) {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  /* Submit Button */
+  :where(.nexley-forms__submit) {
+    grid-column: span min(var(--span, 12), var(--nexley-cols, 12));
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: var(--nexley-primary);
+    border: 1px solid transparent;
+    border-radius: var(--nexley-radius);
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out, opacity 0.15s ease-in-out;
+    text-decoration: none;
+  }
+
+  :where(.nexley-forms__submit:hover) {
+    background-color: var(--nexley-primary-hover);
+  }
+
+  :where(.nexley-forms__submit:disabled) {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+
+  /* Help hint and error texts */
+  :where(.nexley-forms__hint) {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin: 0;
+  }
+
+  :where(.nexley-forms__error) {
+    font-size: 0.75rem;
+    color: #dc2626;
+    margin: 0;
+  }
+
+  /* Status message box */
+  :where(.nexley-forms__status) {
+    grid-column: span var(--nexley-cols, 12);
+    padding: 12px 16px;
+    border-radius: var(--nexley-radius);
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    display: none;
+  }
+
+  :where(.nexley-forms__status.is-success) {
+    display: block;
+    background-color: var(--nexley-status-success-bg);
+    color: var(--nexley-status-success-text);
+    border: 1px solid currentColor;
+  }
+
+  :where(.nexley-forms__status.is-error) {
+    display: block;
+    background-color: var(--nexley-status-error-bg);
+    color: var(--nexley-status-error-text);
+    border: 1px solid currentColor;
+  }
+
+  :where(.nexley-forms__status.is-loading) {
+    display: block;
+    background-color: #f1f5f9;
+    color: #475569;
+  }
+
+  /* Structural elements: heading, paragraph, divider, spacer */
+  :where(.nexley-forms__heading) {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  :where(.nexley-forms__paragraph) {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  :where(.nexley-forms__divider) {
+    border: 0;
+    border-top: 1px solid var(--nexley-border);
+    margin: 8px 0;
+    width: 100%;
+  }
+
+  :where(.nexley-forms__step) {
+    display: contents;
+  }
+
+  /* Multi-step progress bar & step container */
+  :where(.nexley-forms__progress) {
+    grid-column: span var(--nexley-cols, 12);
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  :where(.nexley-forms__progress-step) {
+    flex: 1;
+    height: 4px;
+    background-color: var(--nexley-border);
+    border-radius: 2px;
+    transition: background-color 0.2s ease;
+  }
+
+  :where(.nexley-forms__progress-step.is-active) {
+    background-color: var(--nexley-primary);
+  }
+
+  :where(.nexley-forms__step-nav) {
+    grid-column: span var(--nexley-cols, 12);
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  /* Responsive layout: collapse spans to full width below breakpoint */
+  @media (max-width: 640px) {
+    :where(.nexley-forms__group) {
+      grid-column: span var(--nexley-cols, 12) !important;
+    }
+    :where(.nexley-forms__submit) {
+      grid-column: span var(--nexley-cols, 12) !important;
+    }
+  }
+}

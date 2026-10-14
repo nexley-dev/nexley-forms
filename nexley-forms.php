@@ -30,12 +30,31 @@ define('NEXLEY_FORMS_URL', plugin_dir_url(__FILE__));
 define('NEXLEY_FORMS_BASENAME', plugin_basename(__FILE__));
 
 // Require class files.
+require_once NEXLEY_FORMS_PATH . 'includes/class-db.php';
+require_once NEXLEY_FORMS_PATH . 'includes/class-migration.php';
+require_once NEXLEY_FORMS_PATH . 'includes/class-field-registry.php';
+require_once NEXLEY_FORMS_PATH . 'includes/class-form-schema.php';
 require_once NEXLEY_FORMS_PATH . 'includes/class-post-types.php';
 require_once NEXLEY_FORMS_PATH . 'includes/class-form-parser.php';
 require_once NEXLEY_FORMS_PATH . 'includes/class-mailer.php';
+require_once NEXLEY_FORMS_PATH . 'includes/class-builder.php';
 require_once NEXLEY_FORMS_PATH . 'includes/class-meta-boxes.php';
+require_once NEXLEY_FORMS_PATH . 'includes/class-form-renderer.php';
 require_once NEXLEY_FORMS_PATH . 'includes/class-shortcode.php';
+require_once NEXLEY_FORMS_PATH . 'includes/class-security.php';
+require_once NEXLEY_FORMS_PATH . 'includes/class-webhooks.php';
+require_once NEXLEY_FORMS_PATH . 'includes/class-privacy.php';
 require_once NEXLEY_FORMS_PATH . 'includes/class-rest-controller.php';
+require_once NEXLEY_FORMS_PATH . 'includes/class-csv-exporter.php';
+require_once NEXLEY_FORMS_PATH . 'includes/class-entries-table.php';
+require_once NEXLEY_FORMS_PATH . 'includes/class-entries-page.php';
+require_once NEXLEY_FORMS_PATH . 'includes/importers/interface-importer.php';
+require_once NEXLEY_FORMS_PATH . 'includes/importers/class-importer-ninja-forms.php';
+require_once NEXLEY_FORMS_PATH . 'includes/importers/class-importer-gravity-forms.php';
+require_once NEXLEY_FORMS_PATH . 'includes/importers/class-importer-cf7.php';
+require_once NEXLEY_FORMS_PATH . 'includes/class-importer-exporter.php';
+require_once NEXLEY_FORMS_PATH . 'includes/class-migration-wizard.php';
+require_once NEXLEY_FORMS_PATH . 'includes/class-block.php';
 require_once NEXLEY_FORMS_PATH . 'includes/class-admin-docs.php';
 require_once NEXLEY_FORMS_PATH . 'includes/class-plugin.php';
 
@@ -43,6 +62,9 @@ require_once NEXLEY_FORMS_PATH . 'includes/class-plugin.php';
  * Plugin activation handler.
  */
 register_activation_hook(__FILE__, static function (): void {
+    // Install custom entries table & run migrations.
+    DB::install_or_upgrade();
+
     // Register post types temporarily to flush rewrite rules safely.
     Post_Types::register_post_types();
     flush_rewrite_rules();

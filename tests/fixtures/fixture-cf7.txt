@@ -1,0 +1,15 @@
+<div class="contact-form">
+  <p><label> Your Name (required)<br />
+    [text* client-name placeholder "Jane Doe"] </label></p>
+
+  <p><label> Your Email (required)<br />
+    [email* client-email placeholder "jane@company.com"] </label></p>
+
+  <p><label> Desired Service<br />
+    [select client-service "Web Architecture" "Performance Tuning" "Custom Integration"] </label></p>
+
+  <p><label> Project Message<br />
+    [textarea* client-message placeholder "Describe requirements..."] </label></p>
+
+  <p>[submit "Transmit Inquiry"]</p>
+</div>

@@ -1,0 +1,81 @@
+{
+  "title": "Ninja Test Contact Form",
+  "fields": [
+    {
+      "id": 1,
+      "type": "firstname",
+      "label": "First Name",
+      "key": "first_name",
+      "order": 1,
+      "required": 1,
+      "placeholder": "John"
+    },
+    {
+      "id": 2,
+      "type": "lastname",
+      "label": "Last Name",
+      "key": "last_name",
+      "order": 2,
+      "required": 1,
+      "placeholder": "Doe"
+    },
+    {
+      "id": 3,
+      "type": "email",
+      "label": "Email Address",
+      "key": "email_address",
+      "order": 3,
+      "required": 1,
+      "placeholder": "john@example.com"
+    },
+    {
+      "id": 4,
+      "type": "listselect",
+      "label": "Reason for Contact",
+      "key": "reason",
+      "order": 4,
+      "required": 0,
+      "options": [
+        { "label": "Sales", "value": "sales" },
+        { "label": "Support", "value": "support" }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "textarea",
+      "label": "Your Message",
+      "key": "message",
+      "order": 5,
+      "required": 1,
+      "placeholder": "Type here..."
+    },
+    {
+      "id": 6,
+      "type": "submit",
+      "label": "Submit",
+      "key": "submit",
+      "order": 6
+    }
+  ],
+  "actions": [
+    {
+      "id": 101,
+      "type": "email",
+      "label": "Admin Email Notification",
+      "settings": {
+        "to": "admin@example.com",
+        "email_subject": "New Ninja Form Submission: {field:first_name}",
+        "email_message": "{field:first_name} {field:last_name} submitted:\n\n{_all_fields}",
+        "reply_to": "{field:email_address}"
+      }
+    },
+    {
+      "id": 102,
+      "type": "successmessage",
+      "label": "Success Message",
+      "settings": {
+        "message": "Thank you! Your submission was received."
+      }
+    }
+  ]
+}

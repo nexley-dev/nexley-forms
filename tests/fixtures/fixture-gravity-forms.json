@@ -1,0 +1,64 @@
+{
+  "title": "Gravity Forms Test Contact",
+  "fields": [
+    {
+      "id": 1,
+      "type": "text",
+      "label": "Full Name",
+      "adminLabel": "full_name",
+      "isRequired": true,
+      "placeholder": "Alice Walker",
+      "layoutGridColumnSpan": 6
+    },
+    {
+      "id": 2,
+      "type": "email",
+      "label": "Email Address",
+      "adminLabel": "email_address",
+      "isRequired": true,
+      "placeholder": "alice@example.com",
+      "layoutGridColumnSpan": 6
+    },
+    {
+      "id": 3,
+      "type": "select",
+      "label": "Department",
+      "adminLabel": "department",
+      "isRequired": false,
+      "choices": [
+        { "text": "Billing", "value": "billing" },
+        { "text": "Engineering", "value": "engineering" }
+      ],
+      "layoutGridColumnSpan": 12
+    },
+    {
+      "id": 4,
+      "type": "textarea",
+      "label": "Project Scope",
+      "adminLabel": "scope",
+      "isRequired": true,
+      "layoutGridColumnSpan": 12
+    }
+  ],
+  "button": {
+    "text": "Send Gravity Message"
+  },
+  "notifications": {
+    "notif_1": {
+      "id": "notif_1",
+      "name": "Admin Notification",
+      "to": "admin@domain.com",
+      "subject": "New GF Submission from {Full Name:1}",
+      "message": "Submission received:\n{all_fields}",
+      "replyTo": "{Email Address:2}"
+    }
+  },
+  "confirmations": {
+    "conf_1": {
+      "id": "conf_1",
+      "name": "Default Confirmation",
+      "type": "message",
+      "message": "Thanks for contacting us! We will get in touch shortly."
+    }
+  }
+}
