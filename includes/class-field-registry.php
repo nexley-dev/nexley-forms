@@ -64,7 +64,7 @@ final class Field_Registry {
             'type'              => $type,
             'title'             => ucwords(str_replace(['_', '-'], ' ', $type)),
             'category'          => 'core', // 'core', 'structural', 'compound', 'advanced'
-            'icon'              => 'dashicons-admin-generic',
+            'icon'              => 'text',
             'description'       => '',
             'is_input'          => true,
             'defaults'          => [
@@ -129,7 +129,7 @@ final class Field_Registry {
         self::register_type('text', [
             'title'       => __('Single Line Text', 'nexley-forms'),
             'category'    => 'core',
-            'icon'        => 'dashicons-editor-textcolor',
+            'icon'        => 'text',
             'description' => __('Standard single-line text input.', 'nexley-forms'),
         ]);
 
@@ -137,7 +137,7 @@ final class Field_Registry {
         self::register_type('email', [
             'title'             => __('Email Address', 'nexley-forms'),
             'category'          => 'core',
-            'icon'              => 'dashicons-email',
+            'icon'              => 'email',
             'description'       => __('Validated email input field.', 'nexley-forms'),
             'sanitize_callback' => static fn($val) => sanitize_email((string) $val),
             'validate_callback' => static function ($val, array $field): ?string {
@@ -152,7 +152,7 @@ final class Field_Registry {
         self::register_type('url', [
             'title'             => __('Website / URL', 'nexley-forms'),
             'category'          => 'core',
-            'icon'              => 'dashicons-admin-links',
+            'icon'              => 'url',
             'description'       => __('Standard website URL input.', 'nexley-forms'),
             'sanitize_callback' => static fn($val) => esc_url_raw((string) $val),
             'validate_callback' => static function ($val, array $field): ?string {
@@ -167,7 +167,7 @@ final class Field_Registry {
         self::register_type('phone', [
             'title'             => __('Phone Number', 'nexley-forms'),
             'category'          => 'core',
-            'icon'              => 'dashicons-phone',
+            'icon'              => 'tel',
             'description'       => __('Telephone number input.', 'nexley-forms'),
             'sanitize_callback' => static fn($val) => sanitize_text_field((string) $val),
         ]);
@@ -176,7 +176,7 @@ final class Field_Registry {
         self::register_type('number', [
             'title'             => __('Number', 'nexley-forms'),
             'category'          => 'core',
-            'icon'              => 'dashicons-calculator',
+            'icon'              => 'number',
             'description'       => __('Numeric input with min, max, and step.', 'nexley-forms'),
             'defaults'          => [
                 'min'  => '',
@@ -190,7 +190,7 @@ final class Field_Registry {
         self::register_type('textarea', [
             'title'             => __('Multi-line Textarea', 'nexley-forms'),
             'category'          => 'core',
-            'icon'              => 'dashicons-editor-paragraph',
+            'icon'              => 'textarea',
             'description'       => __('Multi-line text area for messages and comments.', 'nexley-forms'),
             'defaults'          => [
                 'rows' => 4,
@@ -202,7 +202,7 @@ final class Field_Registry {
         self::register_type('select', [
             'title'       => __('Dropdown Select', 'nexley-forms'),
             'category'    => 'core',
-            'icon'        => 'dashicons-menu',
+            'icon'        => 'select',
             'description' => __('Dropdown select list.', 'nexley-forms'),
             'defaults'    => [
                 'options' => [
@@ -216,7 +216,7 @@ final class Field_Registry {
         self::register_type('radio', [
             'title'       => __('Radio Buttons', 'nexley-forms'),
             'category'    => 'core',
-            'icon'        => 'dashicons-marker',
+            'icon'        => 'radio',
             'description' => __('Radio button group allowing single selection.', 'nexley-forms'),
             'defaults'    => [
                 'options' => [
@@ -230,7 +230,7 @@ final class Field_Registry {
         self::register_type('checkbox', [
             'title'             => __('Checkbox Group', 'nexley-forms'),
             'category'          => 'core',
-            'icon'              => 'dashicons-forms',
+            'icon'              => 'checkbox',
             'description'       => __('Checkboxes allowing multiple selections.', 'nexley-forms'),
             'defaults'          => [
                 'options' => [
@@ -250,7 +250,7 @@ final class Field_Registry {
         self::register_type('consent', [
             'title'             => __('Consent / Terms Checkbox', 'nexley-forms'),
             'category'          => 'core',
-            'icon'              => 'dashicons-yes-alt',
+            'icon'              => 'check',
             'description'       => __('GDPR agreement or terms acceptance checkbox.', 'nexley-forms'),
             'defaults'          => [
                 'label'      => __('I agree to the Terms of Service and Privacy Policy.', 'nexley-forms'),
@@ -270,7 +270,7 @@ final class Field_Registry {
         self::register_type('date', [
             'title'             => __('Date Picker', 'nexley-forms'),
             'category'          => 'core',
-            'icon'              => 'dashicons-calendar-alt',
+            'icon'              => 'date',
             'description'       => __('HTML5 native date input.', 'nexley-forms'),
             'defaults'          => [
                 'min' => '',
@@ -283,7 +283,7 @@ final class Field_Registry {
         self::register_type('hidden', [
             'title'             => __('Hidden Field', 'nexley-forms'),
             'category'          => 'core',
-            'icon'              => 'dashicons-hidden',
+            'icon'              => 'hidden',
             'description'       => __('Hidden input value for passing tracking or query parameters.', 'nexley-forms'),
             'defaults'          => [
                 'default' => '',
@@ -295,7 +295,7 @@ final class Field_Registry {
         self::register_type('submit', [
             'title'       => __('Submit Button', 'nexley-forms'),
             'category'    => 'core',
-            'icon'        => 'dashicons-arrow-right-alt',
+            'icon'        => 'submit',
             'description' => __('Form submission trigger button.', 'nexley-forms'),
             'is_input'    => false,
             'defaults'    => [
@@ -315,7 +315,7 @@ final class Field_Registry {
         self::register_type('heading', [
             'title'       => __('Heading', 'nexley-forms'),
             'category'    => 'structural',
-            'icon'        => 'dashicons-heading',
+            'icon'        => 'heading',
             'description' => __('Section header within the form.', 'nexley-forms'),
             'is_input'    => false,
             'defaults'    => [
@@ -330,7 +330,7 @@ final class Field_Registry {
         self::register_type('paragraph', [
             'title'       => __('Paragraph Text', 'nexley-forms'),
             'category'    => 'structural',
-            'icon'        => 'dashicons-editor-alignleft',
+            'icon'        => 'paragraph',
             'description' => __('Explanatory text block.', 'nexley-forms'),
             'is_input'    => false,
             'defaults'    => [
@@ -344,7 +344,7 @@ final class Field_Registry {
         self::register_type('divider', [
             'title'       => __('Divider Rule', 'nexley-forms'),
             'category'    => 'structural',
-            'icon'        => 'dashicons-minus',
+            'icon'        => 'divider',
             'description' => __('Horizontal rule separating form sections.', 'nexley-forms'),
             'is_input'    => false,
             'defaults'    => [
@@ -357,7 +357,7 @@ final class Field_Registry {
         self::register_type('spacer', [
             'title'       => __('Spacer', 'nexley-forms'),
             'category'    => 'structural',
-            'icon'        => 'dashicons-editor-expand',
+            'icon'        => 'spacer',
             'description' => __('Empty space to balance multi-column grids.', 'nexley-forms'),
             'is_input'    => false,
             'defaults'    => [
@@ -376,7 +376,7 @@ final class Field_Registry {
         self::register_type('html', [
             'title'       => __('Custom HTML', 'nexley-forms'),
             'category'    => 'structural',
-            'icon'        => 'dashicons-html',
+            'icon'        => 'html',
             'description' => __('Sanitized custom HTML markup respecting grid span.', 'nexley-forms'),
             'is_input'    => false,
             'defaults'    => [
@@ -404,7 +404,7 @@ final class Field_Registry {
         self::register_type('name', [
             'title'             => __('Name (First & Last)', 'nexley-forms'),
             'category'          => 'compound',
-            'icon'              => 'dashicons-id',
+            'icon'              => 'name',
             'description'       => __('Compound field capturing first and last names.', 'nexley-forms'),
             'defaults'          => [
                 'label'              => __('Full Name', 'nexley-forms'),
@@ -428,7 +428,7 @@ final class Field_Registry {
         self::register_type('address', [
             'title'             => __('Physical Address', 'nexley-forms'),
             'category'          => 'compound',
-            'icon'              => 'dashicons-location',
+            'icon'              => 'address',
             'description'       => __('Structured multi-part street address.', 'nexley-forms'),
             'defaults'          => [
                 'label'    => __('Address', 'nexley-forms'),
@@ -460,7 +460,7 @@ final class Field_Registry {
         self::register_type('file', [
             'title'             => __('Secure File Upload', 'nexley-forms'),
             'category'          => 'advanced',
-            'icon'              => 'dashicons-upload',
+            'icon'              => 'file',
             'description'       => __('Encrypted/protected direct file uploads with MIME validation.', 'nexley-forms'),
             'defaults'          => [
                 'label'      => __('Attach File', 'nexley-forms'),
@@ -482,7 +482,7 @@ final class Field_Registry {
         self::register_type('range', [
             'title'             => __('Range Slider', 'nexley-forms'),
             'category'          => 'advanced',
-            'icon'              => 'dashicons-leftright',
+            'icon'              => 'range',
             'description'       => __('Slider bar selecting values within a range.', 'nexley-forms'),
             'defaults'          => [
                 'min'   => 0,
@@ -498,7 +498,7 @@ final class Field_Registry {
         self::register_type('rating', [
             'title'             => __('Rating', 'nexley-forms'),
             'category'          => 'advanced',
-            'icon'              => 'dashicons-star-filled',
+            'icon'              => 'rating',
             'description'       => __('Star or score rating selector.', 'nexley-forms'),
             'defaults'          => [
                 'max_rating' => 5,
@@ -511,7 +511,7 @@ final class Field_Registry {
         self::register_type('repeater', [
             'title'             => __('Repeater Field', 'nexley-forms'),
             'category'          => 'advanced',
-            'icon'              => 'dashicons-update',
+            'icon'              => 'duplicate',
             'description'       => __('Repeatable sub-fields rows (e.g. guest list, items).', 'nexley-forms'),
             'defaults'          => [
                 'label'      => __('Repeatable Items', 'nexley-forms'),

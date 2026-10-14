@@ -288,17 +288,21 @@
       copyTextToClipboard(shortcode);
 
       const $label = $btn.find('.nexley-copy-label');
-      const $icon = $btn.find('.dashicons');
+      const $icon = $btn.find('.dashicons, .nexley-icon');
       const origText = $label.text();
 
       $label.text(i18n.copied);
-      $icon.removeClass('dashicons-admin-page').addClass('dashicons-yes');
-      $btn.addClass('button-primary').removeClass('button-secondary');
+      if ($icon.is('.dashicons')) {
+        $icon.removeClass('dashicons-admin-page').addClass('dashicons-yes');
+      }
+      $btn.addClass('is-copied');
 
       setTimeout(function () {
         $label.text(origText);
-        $icon.removeClass('dashicons-yes').addClass('dashicons-admin-page');
-        $btn.removeClass('button-primary').addClass('button-secondary');
+        if ($icon.is('.dashicons')) {
+          $icon.removeClass('dashicons-yes').addClass('dashicons-admin-page');
+        }
+        $btn.removeClass('is-copied');
       }, 2000);
     });
 

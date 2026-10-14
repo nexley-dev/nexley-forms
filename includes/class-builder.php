@@ -69,41 +69,41 @@ final class Builder {
             <div class="nexley-builder-header">
                 <div class="nexley-builder-tabs" role="tablist">
                     <button type="button" class="nexley-tab-btn is-active" data-tab="build" role="tab" aria-selected="true">
-                        <span class="dashicons dashicons-layout"></span> <?php esc_html_e('Build', 'nexley-forms'); ?>
+                        <?php \Nexley_Forms\Icons::render('build', 16); ?> <span><?php esc_html_e('Build', 'nexley-forms'); ?></span>
                     </button>
                     <button type="button" class="nexley-tab-btn" data-tab="actions" role="tab" aria-selected="false">
-                        <span class="dashicons dashicons-email-alt"></span> <?php esc_html_e('Emails & Actions', 'nexley-forms'); ?>
+                        <?php \Nexley_Forms\Icons::render('actions', 16); ?> <span><?php esc_html_e('Emails & Actions', 'nexley-forms'); ?></span>
                     </button>
                     <button type="button" class="nexley-tab-btn" data-tab="settings" role="tab" aria-selected="false">
-                        <span class="dashicons dashicons-admin-settings"></span> <?php esc_html_e('Settings', 'nexley-forms'); ?>
+                        <?php \Nexley_Forms\Icons::render('settings', 16); ?> <span><?php esc_html_e('Settings', 'nexley-forms'); ?></span>
                     </button>
                     <button type="button" class="nexley-tab-btn" data-tab="preview" role="tab" aria-selected="false">
-                        <span class="dashicons dashicons-visibility"></span> <?php esc_html_e('Preview', 'nexley-forms'); ?>
+                        <?php \Nexley_Forms\Icons::render('preview', 16); ?> <span><?php esc_html_e('Preview', 'nexley-forms'); ?></span>
                     </button>
                 </div>
 
                 <div class="nexley-builder-actions">
                     <div class="nexley-history-controls" role="group" aria-label="<?php esc_attr_e('History', 'nexley-forms'); ?>">
-                        <button type="button" class="button button-secondary button-small nexley-undo-btn" title="<?php esc_attr_e('Undo (Ctrl+Z)', 'nexley-forms'); ?>" disabled>
-                            <span class="dashicons dashicons-undo"></span>
+                        <button type="button" class="button button-secondary button-small nexley-undo-btn" title="<?php esc_attr_e('Undo (Ctrl+Z)', 'nexley-forms'); ?>" aria-label="<?php esc_attr_e('Undo', 'nexley-forms'); ?>" disabled>
+                            <?php \Nexley_Forms\Icons::render('undo', 16); ?>
                         </button>
-                        <button type="button" class="button button-secondary button-small nexley-redo-btn" title="<?php esc_attr_e('Redo (Ctrl+Y)', 'nexley-forms'); ?>" disabled>
-                            <span class="dashicons dashicons-redo"></span>
+                        <button type="button" class="button button-secondary button-small nexley-redo-btn" title="<?php esc_attr_e('Redo (Ctrl+Y)', 'nexley-forms'); ?>" aria-label="<?php esc_attr_e('Redo', 'nexley-forms'); ?>" disabled>
+                            <?php \Nexley_Forms\Icons::render('redo', 16); ?>
                         </button>
                     </div>
 
                     <span id="nexley-autosave-indicator" style="font-size:11px;color:#64748b;margin-left:8px;margin-right:auto;display:none;align-items:center;gap:4px;">
-                        <span class="dashicons dashicons-saved" style="font-size:14px;width:14px;height:14px;color:#10b981;"></span>
+                        <?php \Nexley_Forms\Icons::render('check', 14, 'nexley-icon-autosave'); ?>
                         <span class="nexley-autosave-text"><?php esc_html_e('Draft autosaved', 'nexley-forms'); ?></span>
                     </span>
 
-                    <button type="button" class="button button-secondary nexley-copy-shortcode-btn" data-shortcode="<?php echo esc_attr($shortcode); ?>">
-                        <span class="dashicons dashicons-admin-page"></span>
+                    <button type="button" class="button button-secondary nexley-copy-shortcode-btn" data-shortcode="<?php echo esc_attr($shortcode); ?>" title="<?php esc_attr_e('Copy shortcode to clipboard', 'nexley-forms'); ?>">
+                        <?php \Nexley_Forms\Icons::render('copy', 14); ?>
                         <span><?php esc_html_e('Copy Shortcode', 'nexley-forms'); ?></span>
                     </button>
 
                     <button type="button" class="button button-primary nexley-save-builder-btn">
-                        <span class="dashicons dashicons-saved"></span>
+                        <?php \Nexley_Forms\Icons::render('check', 14); ?>
                         <span><?php esc_html_e('Save Form', 'nexley-forms'); ?></span>
                     </button>
                 </div>
@@ -131,9 +131,9 @@ final class Builder {
                                                  tabindex="0"
                                                  data-type="<?php echo esc_attr($type_slug); ?>"
                                                  title="<?php echo esc_attr($def['description'] ?? ''); ?>">
-                                                <span class="dashicons <?php echo esc_attr($def['icon'] ?? 'dashicons-admin-generic'); ?>"></span>
+                                                <span class="nexley-palette-icon"><?php \Nexley_Forms\Icons::render($def['icon'] ?? 'text', 16); ?></span>
                                                 <span class="nexley-palette-item-title"><?php echo esc_html($def['title']); ?></span>
-                                                <button type="button" class="nexley-add-field-btn" title="<?php esc_attr_e('Click to add to canvas', 'nexley-forms'); ?>">+</button>
+                                                <button type="button" class="nexley-add-field-btn" aria-label="<?php echo esc_attr(sprintf(__('Add %s to canvas', 'nexley-forms'), $def['title'])); ?>" title="<?php esc_attr_e('Click to add to canvas', 'nexley-forms'); ?>"><?php \Nexley_Forms\Icons::render('plus', 12); ?></button>
                                             </div>
                                         <?php endforeach; ?>
                                     </div>
@@ -167,7 +167,9 @@ final class Builder {
                     <aside class="nexley-settings-drawer" id="nexley-field-drawer" style="display:none;" aria-label="<?php esc_attr_e('Field Settings', 'nexley-forms'); ?>">
                         <div class="nexley-drawer-header">
                             <h3 id="nexley-drawer-title"><?php esc_html_e('Field Settings', 'nexley-forms'); ?></h3>
-                            <button type="button" class="nexley-drawer-close" aria-label="<?php esc_attr_e('Close panel', 'nexley-forms'); ?>">&times;</button>
+                            <button type="button" class="nexley-drawer-close" aria-label="<?php esc_attr_e('Close panel', 'nexley-forms'); ?>" title="<?php esc_attr_e('Close panel', 'nexley-forms'); ?>">
+                                <?php \Nexley_Forms\Icons::render('close', 16); ?>
+                            </button>
                         </div>
                         <div class="nexley-drawer-body" id="nexley-drawer-fields">
                             <!-- Populated dynamically on field selection -->
@@ -333,13 +335,13 @@ final class Builder {
                     <div class="nexley-preview-toolbar">
                         <div class="nexley-device-switcher" role="group" aria-label="<?php esc_attr_e('Device Viewport', 'nexley-forms'); ?>">
                             <button type="button" class="button is-active" data-device="desktop">
-                                <span class="dashicons dashicons-desktop"></span> <?php esc_html_e('Desktop', 'nexley-forms'); ?>
+                                <?php \Nexley_Forms\Icons::render('desktop', 14); ?> <span><?php esc_html_e('Desktop', 'nexley-forms'); ?></span>
                             </button>
                             <button type="button" class="button" data-device="tablet">
-                                <span class="dashicons dashicons-tablet"></span> <?php esc_html_e('Tablet (768px)', 'nexley-forms'); ?>
+                                <?php \Nexley_Forms\Icons::render('tablet', 14); ?> <span><?php esc_html_e('Tablet (768px)', 'nexley-forms'); ?></span>
                             </button>
                             <button type="button" class="button" data-device="mobile">
-                                <span class="dashicons dashicons-smartphone"></span> <?php esc_html_e('Mobile (375px)', 'nexley-forms'); ?>
+                                <?php \Nexley_Forms\Icons::render('mobile', 14); ?> <span><?php esc_html_e('Mobile (375px)', 'nexley-forms'); ?></span>
                             </button>
                         </div>
                     </div>
@@ -351,6 +353,9 @@ final class Builder {
                     </div>
                 </div>
             </div>
+
+            <!-- Bare Unboxed SVG Sprite for JS Canvas -->
+            <?php \Nexley_Forms\Icons::render_sprite(); ?>
         </div>
         <?php
     }

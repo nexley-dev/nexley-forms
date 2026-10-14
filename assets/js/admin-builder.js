@@ -247,7 +247,9 @@
         <span class="nexley-row-title">Row ${rowIdx + 1}</span>
         ${statusBadge}
         <div class="nexley-row-actions">
-          <button type="button" class="button button-small nexley-del-row-btn" title="Delete Row">&times;</button>
+          <button type="button" class="button button-small nexley-del-row-btn" title="Delete Row" aria-label="Delete Row ${rowIdx + 1}">
+            <svg class="nexley-icon" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><use href="#nexley-icon-trash"></use></svg>
+          </button>
         </div>
       `;
       rowEl.appendChild(headerEl);
@@ -286,19 +288,27 @@
 
           fieldEl.innerHTML = `
             <div class="nexley-field-bar">
-              <span class="dashicons dashicons-move nexley-field-handle" title="Drag to reorder"></span>
+              <span class="nexley-field-handle" title="Drag to reorder" aria-label="Drag to reorder" tabindex="0" role="button">
+                <svg class="nexley-icon" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><use href="#nexley-icon-drag"></use></svg>
+              </span>
               <span class="nexley-field-name">${escapeHtml(field.label || field.name)} ${reqMark}</span>
               <span class="nexley-field-span-badge">${spanLabel}</span>
               <div class="nexley-field-controls">
-                <button type="button" class="nexley-btn-ctrl nexley-field-edit-btn" title="Settings">&#9881;</button>
-                <button type="button" class="nexley-btn-ctrl nexley-field-dup-btn" title="Duplicate">&#10064;</button>
-                <button type="button" class="nexley-btn-ctrl nexley-field-del-btn" title="Delete">&times;</button>
+                <button type="button" class="nexley-btn-ctrl nexley-field-edit-btn" title="Settings" aria-label="Field Settings">
+                  <svg class="nexley-icon" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><use href="#nexley-icon-settings"></use></svg>
+                </button>
+                <button type="button" class="nexley-btn-ctrl nexley-field-dup-btn" title="Duplicate" aria-label="Duplicate Field">
+                  <svg class="nexley-icon" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><use href="#nexley-icon-duplicate"></use></svg>
+                </button>
+                <button type="button" class="nexley-btn-ctrl nexley-field-del-btn" title="Delete" aria-label="Delete Field">
+                  <svg class="nexley-icon" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><use href="#nexley-icon-trash"></use></svg>
+                </button>
               </div>
             </div>
             <div class="nexley-field-preview">
               ${renderFieldPreviewInput(field)}
             </div>
-            <div class="nexley-field-resize-handle" title="Drag to resize column span"></div>
+            <div class="nexley-field-resize-handle" title="Drag to resize column span" aria-label="Resize column span" tabindex="0"></div>
           `;
 
           // Click to open settings
@@ -734,10 +744,12 @@
           <label><strong>Choice Options</strong></label>
           <div id="nexley_dr_options_list">
             ${opts.map((opt, i) => `
-              <div class="nexley-opt-row" style="display:flex;gap:4px;margin-bottom:4px;">
+              <div class="nexley-opt-row" style="display:flex;gap:4px;margin-bottom:4px;align-items:center;">
                 <input type="text" class="widefat nexley-opt-val" value="${escapeHtml(opt.value)}" placeholder="Value" />
                 <input type="text" class="widefat nexley-opt-lbl" value="${escapeHtml(opt.label)}" placeholder="Label" />
-                <button type="button" class="button button-small nexley-opt-del" data-idx="${i}">&times;</button>
+                <button type="button" class="button button-small nexley-btn-ctrl nexley-opt-del" data-idx="${i}" title="Delete Option" aria-label="Delete Option">
+                  <svg class="nexley-icon" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><use href="#nexley-icon-trash"></use></svg>
+                </button>
               </div>
             `).join('')}
           </div>
@@ -772,7 +784,7 @@
         </div>
         <div id="nexley_dr_logic_rules">
           ${(logic?.rules || []).map((r, i) => `
-            <div class="nexley-logic-rule-row" style="display:flex;gap:4px;margin-bottom:4px;">
+            <div class="nexley-logic-rule-row" style="display:flex;gap:4px;margin-bottom:4px;align-items:center;">
               <input type="text" class="regular-text nexley-rule-field" value="${escapeHtml(r.field)}" placeholder="Target Field" />
               <select class="nexley-rule-op">
                 <option value="equals" ${r.operator === 'equals' ? 'selected' : ''}>Equals</option>
@@ -782,7 +794,9 @@
                 <option value="is_not_empty" ${r.operator === 'is_not_empty' ? 'selected' : ''}>Is Not Empty</option>
               </select>
               <input type="text" class="regular-text nexley-rule-val" value="${escapeHtml(r.value)}" placeholder="Value" />
-              <button type="button" class="button button-small nexley-rule-del" data-idx="${i}">&times;</button>
+              <button type="button" class="button button-small nexley-btn-ctrl nexley-rule-del" data-idx="${i}" title="Delete Rule" aria-label="Delete Rule">
+                <svg class="nexley-icon" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><use href="#nexley-icon-trash"></use></svg>
+              </button>
             </div>
           `).join('')}
         </div>
@@ -1018,7 +1032,9 @@
       card.innerHTML = `
         <div class="nexley-action-card-header">
           <strong>${escapeHtml(n.name || 'Notification ' + (idx + 1))}</strong>
-          <button type="button" class="button button-small nexley-del-notif-btn" data-idx="${idx}">&times;</button>
+          <button type="button" class="button button-small nexley-del-notif-btn" data-idx="${idx}" title="Delete Notification" aria-label="Delete Notification">
+            <svg class="nexley-icon" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><use href="#nexley-icon-trash"></use></svg>
+          </button>
         </div>
         <table class="form-table">
           <tr>

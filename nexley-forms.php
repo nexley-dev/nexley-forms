@@ -32,6 +32,7 @@ define('NEXLEY_FORMS_BASENAME', plugin_basename(__FILE__));
 // Require class files.
 require_once NEXLEY_FORMS_PATH . 'includes/class-db.php';
 require_once NEXLEY_FORMS_PATH . 'includes/class-migration.php';
+require_once NEXLEY_FORMS_PATH . 'includes/class-icons.php';
 require_once NEXLEY_FORMS_PATH . 'includes/class-field-registry.php';
 require_once NEXLEY_FORMS_PATH . 'includes/class-form-schema.php';
 require_once NEXLEY_FORMS_PATH . 'includes/class-post-types.php';

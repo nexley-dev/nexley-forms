@@ -301,7 +301,7 @@ final class Migration_Wizard {
             ?>
                 <div class="notice notice-info" style="border-left-color: #2563eb; padding: 16px; margin-bottom: 20px;">
                     <h3 style="margin-top: 0; color: #1e293b; display: flex; align-items: center; gap: 8px;">
-                        <span class="dashicons dashicons-analytics" style="color: #2563eb;"></span>
+                        <?php Icons::render('info', 16); ?>
                         <?php echo !empty($report['is_dry_run']) ? esc_html__('Dry-Run Conversion Report (Preview Only)', 'nexley-forms') : esc_html__('Form Conversion Report', 'nexley-forms'); ?>
                         <span class="nexley-status-pill nexley-status--read" style="margin-left: auto;"><?php echo esc_html($report['status']); ?></span>
                     </h3>
@@ -351,13 +351,13 @@ final class Migration_Wizard {
             <!-- Navigation Tabs -->
             <nav class="nav-tab-wrapper wp-clearfix" style="margin-bottom: 24px;">
                 <a href="<?php echo esc_url(add_query_arg('tab', 'importers', $tab_url)); ?>" class="nav-tab <?php echo $current_tab === 'importers' ? 'nav-tab-active' : ''; ?>">
-                    <span class="dashicons dashicons-migrate" style="margin-top: 3px;"></span> <?php esc_html_e('Third-Party Importers', 'nexley-forms'); ?>
+                    <?php Icons::render('migrate', 15); ?> <span><?php esc_html_e('Third-Party Importers', 'nexley-forms'); ?></span>
                 </a>
                 <a href="<?php echo esc_url(add_query_arg('tab', 'native', $tab_url)); ?>" class="nav-tab <?php echo $current_tab === 'native' ? 'nav-tab-active' : ''; ?>">
-                    <span class="dashicons dashicons-database-export" style="margin-top: 3px;"></span> <?php esc_html_e('Native .nex Transfer', 'nexley-forms'); ?>
+                    <?php Icons::render('download', 15); ?> <span><?php esc_html_e('Native .nex Transfer', 'nexley-forms'); ?></span>
                 </a>
                 <a href="<?php echo esc_url(add_query_arg('tab', 'shortcodes', $tab_url)); ?>" class="nav-tab <?php echo $current_tab === 'shortcodes' ? 'nav-tab-active' : ''; ?>">
-                    <span class="dashicons dashicons-admin-links" style="margin-top: 3px;"></span> <?php esc_html_e('Shortcode Replacer', 'nexley-forms'); ?>
+                    <?php Icons::render('url', 15); ?> <span><?php esc_html_e('Shortcode Replacer', 'nexley-forms'); ?></span>
                 </a>
             </nav>
 
@@ -401,8 +401,8 @@ final class Migration_Wizard {
 
                     <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px; margin-bottom: 16px;">
                         <?php if ($is_available && !empty($forms)) : ?>
-                            <p style="margin: 0 0 10px 0; font-weight: 600; color: #0f172a;">
-                                <span class="dashicons dashicons-yes-alt" style="color: #10b981;"></span>
+                            <p style="margin: 0 0 10px 0; font-weight: 600; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+                                <?php Icons::render('check', 14); ?>
                                 <?php
                                 printf(
                                     /* translators: %d: Form count */
@@ -428,7 +428,7 @@ final class Migration_Wizard {
 
                                 <div style="display: flex; gap: 8px;">
                                     <button type="submit" name="is_dry_run" value="1" class="button button-secondary" style="flex: 1;">
-                                        <span class="dashicons dashicons-visibility" style="margin-top: 3px;"></span> <?php esc_html_e('Dry Run', 'nexley-forms'); ?>
+                                        <?php Icons::render('preview', 14); ?> <span><?php esc_html_e('Dry Run', 'nexley-forms'); ?></span>
                                     </button>
                                     <button type="submit" class="button button-primary" style="flex: 1;">
                                         <?php esc_html_e('Migrate &rarr;', 'nexley-forms'); ?>
@@ -436,8 +436,8 @@ final class Migration_Wizard {
                                 </div>
                             </form>
                         <?php else : ?>
-                            <p style="margin: 0; color: #64748b; font-size: 12.5px;">
-                                <span class="dashicons dashicons-info" style="color: #94a3b8;"></span>
+                            <p style="margin: 0; color: #64748b; font-size: 12.5px; display: flex; align-items: center; gap: 6px;">
+                                <?php Icons::render('info', 14); ?>
                                 <?php esc_html_e('No active forms detected in database. You can still import from an export file below:', 'nexley-forms'); ?>
                             </p>
                         <?php endif; ?>
@@ -456,7 +456,7 @@ final class Migration_Wizard {
                             <input type="file" name="import_file" accept=".json,.nff,.txt" required style="margin-bottom: 8px; width: 100%;" />
                             <div style="display: flex; gap: 8px;">
                                 <button type="submit" name="is_dry_run" value="1" class="button button-secondary" style="flex: 1;">
-                                    <span class="dashicons dashicons-visibility" style="margin-top: 3px;"></span> <?php esc_html_e('Dry Run', 'nexley-forms'); ?>
+                                    <?php Icons::render('preview', 14); ?> <span><?php esc_html_e('Dry Run', 'nexley-forms'); ?></span>
                                 </button>
                                 <button type="submit" class="button button-primary" style="flex: 1;">
                                     <?php esc_html_e('Convert &rarr;', 'nexley-forms'); ?>
@@ -513,8 +513,8 @@ final class Migration_Wizard {
                         ?>
 
                         <button type="submit" class="button button-primary">
-                            <span class="dashicons dashicons-download" style="margin-top: 3px;"></span>
-                            <?php esc_html_e('Download .nex File', 'nexley-forms'); ?>
+                            <?php Icons::render('download', 14); ?>
+                            <span><?php esc_html_e('Download .nex File', 'nexley-forms'); ?></span>
                         </button>
                     </form>
                 <?php else : ?>
@@ -539,8 +539,8 @@ final class Migration_Wizard {
                     </p>
 
                     <button type="submit" class="button button-primary">
-                        <span class="dashicons dashicons-upload" style="margin-top: 3px;"></span>
-                        <?php esc_html_e('Upload & Import Form', 'nexley-forms'); ?>
+                        <?php Icons::render('upload', 14); ?>
+                        <span><?php esc_html_e('Upload & Import Form', 'nexley-forms'); ?></span>
                     </button>
                 </form>
             </div>
@@ -643,7 +643,7 @@ final class Migration_Wizard {
                 </table>
             <?php else : ?>
                 <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 24px; text-align: center;">
-                    <span class="dashicons dashicons-yes-alt" style="font-size: 32px; color: #10b981; height: 32px; width: 32px;"></span>
+                    <div style="margin-bottom: 8px; color: #10b981;"><?php Icons::render('check', 28); ?></div>
                     <h3 style="margin: 8px 0 4px 0;"><?php esc_html_e('Zero Legacy Shortcodes Found', 'nexley-forms'); ?></h3>
                     <p style="margin: 0; color: #64748b; font-size: 13px;">
                         <?php esc_html_e('No embedded Ninja Forms, Gravity Forms, or CF7 shortcodes were found across your content.', 'nexley-forms'); ?>

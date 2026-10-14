@@ -190,8 +190,8 @@ class Entries_Table extends \WP_List_Table {
             <?php submit_button(__('Filter', 'nexley-forms'), '', 'filter_action', false, ['id' => 'post-query-submit']); ?>
 
             <a href="<?php echo esc_url($export_url); ?>" class="button button-secondary nexley-export-csv-btn">
-                <span class="dashicons dashicons-download" style="margin-top: 3px; font-size: 16px;"></span>
-                <?php esc_html_e('Export to CSV', 'nexley-forms'); ?>
+                <?php \Nexley_Forms\Icons::render('download', 14); ?>
+                <span><?php esc_html_e('Export to CSV', 'nexley-forms'); ?></span>
             </a>
         </div>
         <?php

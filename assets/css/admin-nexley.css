@@ -7,24 +7,24 @@
  */
 
 :root {
-  --nx-green: #b7f34a;
-  --nx-green-hover: #c8fb42;
-  --nx-black: #0f172a;
-  --nx-dark: #1e293b;
+  --nx-green: #0969da;
+  --nx-green-hover: #085cc1;
+  --nx-black: #1f2328;
+  --nx-dark: #24292f;
   --nx-white: #ffffff;
-  --nx-canvas: #f8fafc;
-  --nx-canvas-subtle: #f1f5f9;
-  --nx-border: #e2e8f0;
-  --nx-border-dark: #334155;
-  --nx-border-hover: #cbd5e1;
-  --nx-text: #0f172a;
-  --nx-text-muted: #64748b;
-  --nx-danger: #b42318;
-  --nx-success: #008a4e;
-  --nx-radius: 4px;
-  --nx-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --nx-font-sans: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --nx-font-body: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --nx-canvas: #f6f8fa;
+  --nx-canvas-subtle: #eaeef2;
+  --nx-border: #d0d7de;
+  --nx-border-dark: #afb8c1;
+  --nx-border-hover: #8c959f;
+  --nx-text: #1f2328;
+  --nx-text-muted: #656d76;
+  --nx-danger: #cf222e;
+  --nx-success: #1a7f37;
+  --nx-radius: 6px;
+  --nx-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --nx-font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
+  --nx-font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
 }
 
 /* ==========================================================================
@@ -52,7 +52,6 @@ body.nexley-admin-theme .wrap > h1.wp-heading-inline {
   font-size: 24px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
   color: var(--nx-black);
   margin-top: 16px;
   margin-bottom: 16px;
@@ -64,7 +63,6 @@ body.nexley-admin-theme .page-title-action {
   font-size: 11px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.08em !important;
   background: var(--nx-white) !important;
   color: var(--nx-black) !important;
   border: 1px solid var(--nx-border-dark) !important;
@@ -115,19 +113,17 @@ body.nexley-admin-theme .nexley-btn-primary {
   vertical-align: middle !important;
   background: var(--nx-green) !important;
   border: 1px solid var(--nx-green) !important;
-  color: var(--nx-black) !important;
+  color: #ffffff !important;
   font-family: var(--nx-font-sans) !important;
-  font-size: 12px !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.08em !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
   border-radius: var(--nx-radius) !important;
   box-shadow: none !important;
   text-shadow: none !important;
-  padding: 8px 20px !important;
+  padding: 6px 16px !important;
   height: auto !important;
-  min-height: 38px !important;
-  line-height: 1 !important;
+  min-height: 32px !important;
+  line-height: 1.4 !important;
   cursor: pointer;
   box-sizing: border-box !important;
   transition: all 0.15s ease-in-out !important;
@@ -138,14 +134,14 @@ body.nexley-admin-theme #publish:hover,
 body.nexley-admin-theme .nexley-btn-primary:hover {
   background: var(--nx-green-hover) !important;
   border-color: var(--nx-green-hover) !important;
-  color: var(--nx-black) !important;
+  color: #ffffff !important;
   box-shadow: none !important;
 }
 
 body.nexley-admin-theme .button-primary:focus,
 body.nexley-admin-theme #publish:focus,
 body.nexley-admin-theme .nexley-btn-primary:focus {
-  outline: 2px solid var(--nx-black) !important;
+  outline: 2px solid var(--nx-green) !important;
   outline-offset: 2px !important;
   box-shadow: none !important;
 }
@@ -162,60 +158,71 @@ body.nexley-admin-theme .button:not(.button-primary):not(#publish) {
   border: 1px solid var(--nx-border) !important;
   color: var(--nx-black) !important;
   font-family: var(--nx-font-sans) !important;
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.06em !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
   border-radius: var(--nx-radius) !important;
   box-shadow: none !important;
   text-shadow: none !important;
   padding: 6px 14px !important;
   height: auto !important;
   min-height: 32px !important;
-  line-height: 1 !important;
+  line-height: 1.4 !important;
   box-sizing: border-box !important;
   transition: all 0.15s ease-in-out !important;
 }
 
 body.nexley-admin-theme .button-secondary:hover,
 body.nexley-admin-theme .button:not(.button-primary):not(#publish):hover {
-  background: var(--nx-black) !important;
-  color: var(--nx-green) !important;
-  border-color: var(--nx-black) !important;
+  background: #f6f8fa !important;
+  color: var(--nx-black) !important;
+  border-color: var(--nx-border-hover) !important;
 }
 
 body.nexley-admin-theme .button-secondary:focus,
 body.nexley-admin-theme .button:not(.button-primary):not(#publish):focus {
   outline: 2px solid var(--nx-green) !important;
-  outline-offset: 1px !important;
+  outline-offset: 2px !important;
   box-shadow: none !important;
 }
 
-/* Button Dashicons Alignment & Sizing */
-body.nexley-admin-theme .button .dashicons,
-body.nexley-admin-theme .button .dashicons:before,
-body.nexley-admin-theme .button-secondary .dashicons,
-body.nexley-admin-theme .button-secondary .dashicons:before,
-body.nexley-admin-theme .button-primary .dashicons,
-body.nexley-admin-theme .button-primary .dashicons:before {
-  width: 14px !important;
-  height: 14px !important;
-  font-size: 14px !important;
-  line-height: 14px !important;
+/* Button Icons Alignment & Sizing */
+body.nexley-admin-theme .button .nexley-icon,
+body.nexley-admin-theme .button-secondary .nexley-icon,
+body.nexley-admin-theme .button-primary .nexley-icon {
+  width: 15px !important;
+  height: 15px !important;
+  vertical-align: middle !important;
+  flex-shrink: 0;
+  color: currentColor !important;
+}
+
+/* Icon-only buttons (undo, redo, delete row, etc.) */
+body.nexley-admin-theme .button.nexley-undo-btn,
+body.nexley-admin-theme .button.nexley-redo-btn,
+body.nexley-admin-theme .button.nexley-del-row-btn,
+body.nexley-admin-theme .button.nexley-del-notif-btn {
+  width: 32px !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  vertical-align: middle !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  color: inherit !important;
+}
+
+body.nexley-admin-theme .button.nexley-undo-btn .nexley-icon,
+body.nexley-admin-theme .button.nexley-redo-btn .nexley-icon,
+body.nexley-admin-theme .button.nexley-del-row-btn .nexley-icon,
+body.nexley-admin-theme .button.nexley-del-notif-btn .nexley-icon {
+  width: 16px !important;
+  height: 16px !important;
 }
 
 /* Small button modifier */
 body.nexley-admin-theme .button-small {
   padding: 3px 8px !important;
-  font-size: 10px !important;
-  min-height: 26px !important;
+  font-size: 11px !important;
+  min-height: 28px !important;
 }
 
 /* Delete / Trash link */
@@ -224,7 +231,6 @@ body.nexley-admin-theme #delete-action .submitdelete {
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
   color: var(--nx-danger);
   text-decoration: none;
   padding: 6px 0;
@@ -279,7 +285,6 @@ body.nexley-admin-theme #titlediv #title {
   font-size: 18px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.04em !important;
   padding: 12px 16px !important;
   margin-bottom: 8px;
 }
@@ -323,7 +328,6 @@ body.nexley-admin-theme .postbox-header .hndle {
   font-size: 12px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.08em !important;
   color: var(--nx-black) !important;
   padding: 0 !important;
   margin: 0 !important;
@@ -373,7 +377,6 @@ body.nexley-admin-theme .nexley-admin-shortcode-bar .nexley-shortcode-label {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
   color: var(--nx-black);
   margin-bottom: 8px;
 }
@@ -416,7 +419,6 @@ body.nexley-admin-theme .nexley-copy-shortcode {
   font-size: 11px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.06em !important;
   box-sizing: border-box !important;
   vertical-align: middle !important;
   cursor: pointer;
@@ -490,7 +492,6 @@ body.nexley-admin-theme .nexley-toolbar-label {
   color: var(--nx-text-muted);
   margin-right: 6px;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
 }
 
 body.nexley-admin-theme .nexley-tag-btn {
@@ -500,7 +501,6 @@ body.nexley-admin-theme .nexley-tag-btn {
   font-size: 11px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.06em !important;
   height: 30px !important;
   line-height: 28px !important;
   padding: 0 10px !important;
@@ -617,7 +617,6 @@ body.nexley-admin-theme .nexley-modal-header h3 {
   font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: var(--nx-black);
 }
 
@@ -651,7 +650,6 @@ body.nexley-admin-theme .nexley-modal-field label {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
   margin-bottom: 6px;
   color: var(--nx-black);
 }
@@ -669,7 +667,6 @@ body.nexley-admin-theme .nexley-modal-preview-box label {
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: var(--nx-text-muted);
   display: block;
   margin-bottom: 6px;
@@ -716,7 +713,6 @@ body.nexley-admin-theme .nexley-tag-pills-title {
   color: var(--nx-text-muted);
   margin-bottom: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
 }
 
 body.nexley-admin-theme .nexley-tag-pills-container {
@@ -779,7 +775,6 @@ body.nexley-admin-theme .wp-list-table tfoot th {
   font-size: 11px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.08em !important;
   padding: 12px 14px !important;
 }
 
@@ -846,7 +841,6 @@ body.nexley-admin-theme .nexley-entry-count-badge {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
   text-decoration: none;
   transition: all 0.15s ease-in-out;
 }
@@ -887,7 +881,6 @@ body.nexley-admin-theme .tablenav input[type="submit"] {
   font-size: 11.5px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.06em !important;
   border-radius: var(--nx-radius) !important;
   box-sizing: border-box !important;
   vertical-align: middle !important;
@@ -915,7 +908,6 @@ body.nexley-admin-theme .search-box .button {
   font-size: 11.5px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.06em !important;
   border-radius: var(--nx-radius) !important;
   box-sizing: border-box !important;
   vertical-align: middle !important;
@@ -969,7 +961,6 @@ body.nexley-admin-theme .nexley-entry-meta-item strong {
   font-weight: 700;
   color: var(--nx-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
   margin-bottom: 4px;
 }
 
@@ -995,7 +986,6 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
 }
 
 /* ==========================================================================
@@ -1057,7 +1047,6 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   font-family: var(--nx-font-sans);
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.1em;
   text-transform: uppercase;
   margin-bottom: 14px;
 }
@@ -1081,7 +1070,6 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   font-size: 26px;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
   color: var(--nx-black);
   margin: 0 0 10px 0;
   line-height: 1.2;
@@ -1112,7 +1100,6 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   font-family: var(--nx-font-sans);
   font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
   color: var(--nx-black);
 }
 
@@ -1147,7 +1134,6 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
   transition: all 0.15s ease-in-out;
 }
 
@@ -1194,7 +1180,6 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   font-size: 18px;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
   color: var(--nx-black);
   margin: 0 0 4px 0;
 }
@@ -1219,7 +1204,6 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: var(--nx-black);
   margin: 0 0 8px 0;
 }
@@ -1254,7 +1238,6 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: var(--nx-black);
 }
 
@@ -1301,7 +1284,6 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   font-size: 10.5px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: var(--nx-green);
 }
 
@@ -1346,7 +1328,6 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   font-size: 11.5px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: var(--nx-black);
   margin: 0 0 12px 0;
 }
@@ -1386,7 +1367,6 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   font-size: 10.5px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: var(--nx-black);
   margin-bottom: 6px;
 }
@@ -1489,7 +1469,6 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 .nexley-palette-group-title {
   font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
   color: #64748b;
   margin: 0 0 8px 0;
   font-weight: 700;
@@ -1498,30 +1477,44 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 .nexley-palette-items {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 2px;
 }
 
 .nexley-palette-item {
-  background: #ffffff;
-  border: 1px solid var(--nx-border);
-  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 6px 8px;
   border-radius: var(--nx-radius);
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 13px;
+  color: var(--nx-text);
   cursor: grab;
   user-select: none;
-  transition: all 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .nexley-palette-item:hover {
-  border-color: #94a3b8;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  background: #f1f5f9;
+  color: #0f172a;
 }
 
 .nexley-palette-item:active {
   cursor: grabbing;
+}
+
+.nexley-palette-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--nx-text-muted);
+}
+
+.nexley-palette-item:hover .nexley-palette-icon {
+  color: var(--nx-text);
 }
 
 .nexley-palette-item-title {
@@ -1529,16 +1522,29 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 }
 
 .nexley-add-field-btn {
-  background: #f1f5f9;
-  border: 1px solid var(--nx-border);
-  border-radius: 3px;
-  width: 22px;
-  height: 22px;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-weight: bold;
+  color: var(--nx-text-muted);
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.nexley-add-field-btn:hover {
+  color: var(--nx-green);
+  background: transparent;
+}
+
+.nexley-add-field-btn:focus-visible {
+  outline: 2px solid var(--nx-green);
+  outline-offset: 2px;
 }
 
 /* Canvas Area (Center) */
@@ -1562,8 +1568,8 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 }
 
 .nexley-canvas-heading {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
   color: #0f172a;
 }
 
@@ -1590,14 +1596,14 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 }
 
 .nexley-row-title {
-  font-weight: 700;
+  font-weight: 600;
   color: #0f172a;
 }
 
 .nexley-badge {
   display: inline-block;
   padding: 2px 8px;
-  border-radius: 3px;
+  border-radius: 4px;
   font-size: 11px;
   font-weight: 600;
 }
@@ -1622,7 +1628,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 
 .nexley-row-grid.is-dragover {
   background: #f8fafc;
-  outline: 2px dashed #3b82f6;
+  outline: 2px dashed #0969da;
 }
 
 .nexley-canvas-field {
@@ -1633,16 +1639,18 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   padding: 8px 12px;
   position: relative;
   cursor: pointer;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease;
 }
 
 .nexley-canvas-field:hover {
-  border-color: #94a3b8;
+  border-color: #8c959f;
 }
 
 .nexley-canvas-field.is-selected {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  border-color: #0969da;
+  outline: 2px solid #0969da;
+  outline-offset: 1px;
+  box-shadow: none;
 }
 
 .nexley-field-bar {
@@ -1651,6 +1659,22 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   gap: 6px;
   font-size: 12px;
   margin-bottom: 8px;
+}
+
+.nexley-field-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  cursor: grab;
+  color: var(--nx-text-muted);
+  transition: color 0.15s ease;
+}
+
+.nexley-field-handle:hover {
+  color: var(--nx-text);
 }
 
 .nexley-field-name {
@@ -1669,20 +1693,38 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 
 .nexley-field-controls {
   display: flex;
-  gap: 4px;
+  gap: 2px;
 }
 
+/* Bare, unboxed icon button with min 28x28px hit area via transparent padding */
 .nexley-btn-ctrl {
   background: transparent;
   border: 0;
   cursor: pointer;
-  padding: 2px 4px;
-  color: #64748b;
-  font-size: 12px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #656d76;
+  border-radius: 4px;
+  transition: color 0.15s ease;
 }
 
 .nexley-btn-ctrl:hover {
-  color: #0f172a;
+  color: #1f2328;
+  background: transparent;
+}
+
+.nexley-btn-ctrl:focus-visible {
+  outline: 2px solid #0969da;
+  outline-offset: 2px;
+}
+
+.nexley-field-del-btn:hover {
+  color: #cf222e;
 }
 
 .nexley-field-resize-handle {
@@ -1708,7 +1750,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   width: 320px;
   flex-shrink: 0;
   border-left: 1px solid var(--nx-border);
-  background: #f8fafc;
+  background: #ffffff;
   padding: 20px;
   overflow-y: auto;
   max-height: 800px;
@@ -1726,14 +1768,35 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 
 .nexley-drawer-header h3 {
   margin: 0;
-  font-size: 15px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2328;
 }
 
 .nexley-drawer-close {
   background: transparent;
   border: 0;
-  font-size: 20px;
   cursor: pointer;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #656d76;
+  border-radius: 4px;
+  transition: color 0.15s ease;
+}
+
+.nexley-drawer-close:hover {
+  color: #1f2328;
+  background: transparent;
+}
+
+.nexley-drawer-close:focus-visible {
+  outline: 2px solid #0969da;
+  outline-offset: 2px;
 }
 
 .nexley-drawer-group {
@@ -1826,18 +1889,18 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 }
 
 .nexley-device-switcher .button.is-active {
-  background: #2563eb;
+  background: #1f2328;
   color: #ffffff;
-  border-color: #2563eb;
+  border-color: #1f2328;
 }
 
 .nexley-preview-viewport {
   margin: 0 auto;
   background: #ffffff;
   border: 1px solid var(--nx-border);
-  border-radius: 8px;
+  border-radius: var(--nx-radius);
   padding: 32px;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+  box-shadow: none;
   transition: max-width 0.2s ease;
 }
 

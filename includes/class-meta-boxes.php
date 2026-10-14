@@ -73,7 +73,7 @@ final class Meta_Boxes {
             <div class="nexley-shortcode-input-group">
                 <input type="text" id="nexley_form_shortcode_input" readonly value="<?php echo esc_attr($shortcode); ?>" class="large-text code" />
                 <button type="button" class="button button-secondary nexley-copy-shortcode" data-target="#nexley_form_shortcode_input">
-                    <span class="dashicons dashicons-admin-page"></span>
+                    <?php Icons::render('copy', 14); ?>
                     <span class="nexley-copy-label"><?php esc_html_e('Copy Shortcode', 'nexley-forms'); ?></span>
                 </button>
             </div>

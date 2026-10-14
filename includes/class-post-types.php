@@ -156,7 +156,7 @@ final class Post_Types {
                         class="button button-small nexley-copy-shortcode" 
                         data-shortcode="<?php echo esc_attr($shortcode); ?>" 
                         title="<?php esc_attr_e('Copy shortcode to clipboard', 'nexley-forms'); ?>">
-                    <span class="dashicons dashicons-admin-page"></span>
+                    <?php Icons::render('copy', 14); ?>
                     <span class="nexley-copy-label"><?php esc_html_e('Copy', 'nexley-forms'); ?></span>
                 </button>
             </div>

@@ -386,7 +386,7 @@ final class Entries_Page {
                                                             'field'    => $name,
                                                         ], admin_url('admin-post.php'));
                                                         $file_display = !empty($val['original_name']) ? $val['original_name'] : $val['file_name'];
-                                                        echo '<a href="' . esc_url($download_url) . '" class="button button-secondary"><span class="dashicons dashicons-download" style="vertical-align: text-top; font-size: 16px;"></span> ' . esc_html($file_display) . '</a>';
+                                                        echo '<a href="' . esc_url($download_url) . '" class="button button-secondary">' . Icons::get('download', 14) . ' ' . esc_html($file_display) . '</a>';
                                                     } elseif (is_array($val)) {
                                                         echo '<ul style="margin: 0; padding-left: 18px;">';
                                                         foreach ($val as $sub_val) {
@@ -396,7 +396,7 @@ final class Entries_Page {
                                                     } elseif (filter_var($val, FILTER_VALIDATE_EMAIL)) {
                                                         echo '<a href="' . esc_url('mailto:' . (string) $val) . '">' . esc_html((string) $val) . '</a>';
                                                     } elseif (filter_var($val, FILTER_VALIDATE_URL)) {
-                                                        echo '<a href="' . esc_url((string) $val) . '" target="_blank" rel="noopener noreferrer">' . esc_html((string) $val) . ' <span class="dashicons dashicons-external" style="font-size: 14px; text-decoration: none;"></span></a>';
+                                                        echo '<a href="' . esc_url((string) $val) . '" target="_blank" rel="noopener noreferrer">' . esc_html((string) $val) . ' ' . Icons::get('external', 13) . '</a>';
                                                     } else {
                                                         echo nl2br(esc_html((string) $val));
                                                     }
