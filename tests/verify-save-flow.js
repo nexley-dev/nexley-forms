@@ -310,12 +310,14 @@ async function runVerification() {
 
   const expectedTabs = [
     'Nexley (.nex)',
-    'Third-Party Forms',
+    'Ninja Forms',
+    'Gravity Forms',
+    'Contact Form 7',
     'Replace Shortcodes'
   ];
 
-  if (screenCheck.tabs.length !== 3) {
-    throw new Error(`Expected exactly 3 tabs, got ${screenCheck.tabs.length}`);
+  if (screenCheck.tabs.length !== 5) {
+    throw new Error(`Expected exactly 5 tabs, got ${screenCheck.tabs.length}`);
   }
 
   for (let i = 0; i < expectedTabs.length; i++) {
@@ -332,63 +334,40 @@ async function runVerification() {
     throw new Error(`"Unverified" badges found: ${screenCheck.unverifiedPills}. Requirement specifies removing every unverified badge from UI.`);
   }
 
-  // 8b. Navigate to Third-Party Forms tab and verify select dropdown
-  console.log('   - Navigating to Third-Party Forms tab...');
-  await page.goto('http://nexley.local/wp-admin/edit.php?post_type=nexley_form&page=nexley-import-export&tab=third-party', { waitUntil: 'networkidle2' });
+  // 8b. Navigate through dedicated importer tabs and verify drop zones first
+  const dedicatedTabs = [
+    { slug: 'ninja-forms', name: 'Ninja Forms', ext: '.nff' },
+    { slug: 'gravity-forms', name: 'Gravity Forms', ext: '.json' },
+    { slug: 'cf7', name: 'Contact Form 7', ext: '.txt' }
+  ];
 
-  const thirdPartyCheck = await page.evaluate(() => {
-    const select = document.getElementById('nexley-provider-select');
-    const options = select ? Array.from(select.options).map(o => ({ value: o.value, text: o.text })) : [];
-    const nfPanel = document.getElementById('nexley-provider-panel-ninja-forms');
-    const gfPanel = document.getElementById('nexley-provider-panel-gravity-forms');
-    const cf7Panel = document.getElementById('nexley-provider-panel-cf7');
+  for (const tabItem of dedicatedTabs) {
+    console.log(`   - Navigating to dedicated tab: ${tabItem.name}...`);
+    await page.goto(`http://nexley.local/wp-admin/edit.php?post_type=nexley_form&page=nexley-import-export&tab=${tabItem.slug}`, { waitUntil: 'networkidle2' });
 
-    return {
-      hasSelect: !!select,
-      options,
-      nfVisible: nfPanel ? window.getComputedStyle(nfPanel).display !== 'none' : false,
-      gfVisible: gfPanel ? window.getComputedStyle(gfPanel).display !== 'none' : false,
-      cf7Visible: cf7Panel ? window.getComputedStyle(cf7Panel).display !== 'none' : false
-    };
-  });
+    const tabCheck = await page.evaluate(() => {
+      const dropzone = document.querySelector('.nexley-dropzone');
+      const fileInput = document.querySelector('.nexley-file-input');
+      const firstPostboxH3 = document.querySelector('.nexley-importer-tab-panel .postbox:first-of-type h3');
+      const accordions = document.querySelectorAll('details').length;
+      return {
+        hasDropzone: !!dropzone,
+        hasFileInput: !!fileInput,
+        firstHeading: firstPostboxH3 ? firstPostboxH3.textContent.trim() : '',
+        accordions
+      };
+    });
 
-  console.log(`   - Provider Select Dropdown present: ${thirdPartyCheck.hasSelect}`);
-  console.log('   - Provider Select options:', thirdPartyCheck.options.map(o => `${o.value} (${o.text})`).join(', '));
-  console.log(`   - Initial panel visibility (NF: ${thirdPartyCheck.nfVisible}, GF: ${thirdPartyCheck.gfVisible}, CF7: ${thirdPartyCheck.cf7Visible})`);
-
-  if (!thirdPartyCheck.hasSelect) {
-    throw new Error('Provider select dropdown (#nexley-provider-select) not found in Third-Party Forms tab');
-  }
-
-  const expectedProviders = ['ninja-forms', 'gravity-forms', 'cf7'];
-  for (const prov of expectedProviders) {
-    if (!thirdPartyCheck.options.some(o => o.value === prov)) {
-      throw new Error(`Missing expected provider option: ${prov}`);
+    console.log(`     Drop zone present: ${tabCheck.hasDropzone}, First block: "${tabCheck.firstHeading}", Accordions: ${tabCheck.accordions}`);
+    if (!tabCheck.hasDropzone || !tabCheck.hasFileInput) {
+      throw new Error(`Drop zone or file input missing in tab ${tabItem.name}`);
+    }
+    if (tabCheck.accordions > 0) {
+      throw new Error(`Accordions found in tab ${tabItem.name}`);
     }
   }
 
-  // Test selecting Gravity Forms via JavaScript / change event
-  console.log('   - Testing provider dropdown selection change to Gravity Forms...');
-  await page.select('#nexley-provider-select', 'gravity-forms');
-  await page.evaluate(() => {
-    document.getElementById('nexley-provider-select').dispatchEvent(new Event('change', { bubbles: true }));
-  });
-
-  const gfPanelVisibility = await page.evaluate(() => {
-    const nf = document.getElementById('nexley-provider-panel-ninja-forms');
-    const gf = document.getElementById('nexley-provider-panel-gravity-forms');
-    return {
-      nfVisible: nf ? window.getComputedStyle(nf).display !== 'none' : false,
-      gfVisible: gf ? window.getComputedStyle(gf).display !== 'none' : false
-    };
-  });
-
-  console.log(`   - After select change (NF visible: ${gfPanelVisibility.nfVisible}, GF visible: ${gfPanelVisibility.gfVisible})`);
-  if (!gfPanelVisibility.gfVisible || gfPanelVisibility.nfVisible) {
-    throw new Error('Dropdown switching failed: Gravity Forms panel should be visible and Ninja Forms hidden');
-  }
-
-  console.log('   => IMPORT / EXPORT SCREEN DOM ASSERTIONS: ALL PASSED\n');
+  console.log('   => IMPORT / EXPORT SCREEN DOM ASSERTIONS: ALL PASSED (5 TABS, DROP ZONE FIRST)\n');
 
   await browser.close();
   console.log('======================================================================');

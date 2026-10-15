@@ -130,8 +130,7 @@ final class Migration_Wizard {
                             wp_safe_redirect(add_query_arg([
                                 'post_type' => Post_Types::CPT_FORM,
                                 'page'      => self::PAGE_SLUG,
-                                'tab'       => 'third-party',
-                                'provider'  => $importer_id,
+                                'tab'       => $importer_id,
                                 'dry_run'   => '1',
                             ], admin_url('edit.php')));
                             exit;
@@ -144,8 +143,7 @@ final class Migration_Wizard {
                             wp_safe_redirect(add_query_arg([
                                 'post_type' => Post_Types::CPT_FORM,
                                 'page'      => self::PAGE_SLUG,
-                                'tab'       => 'third-party',
-                                'provider'  => $importer_id,
+                                'tab'       => $importer_id,
                                 'migrated'  => $new_id,
                             ], admin_url('edit.php')));
                             exit;
@@ -193,8 +191,7 @@ final class Migration_Wizard {
                     $redirect_args = [
                         'post_type' => Post_Types::CPT_FORM,
                         'page'      => self::PAGE_SLUG,
-                        'tab'       => 'third-party',
-                        'provider'  => $importer_id,
+                        'tab'       => $importer_id,
                     ];
                     if ($is_dry_run) {
                         $redirect_args['dry_run'] = '1';
@@ -209,8 +206,7 @@ final class Migration_Wizard {
             wp_safe_redirect(add_query_arg([
                 'post_type' => Post_Types::CPT_FORM,
                 'page'      => self::PAGE_SLUG,
-                'tab'       => 'third-party',
-                'provider'  => $importer_id ?: 'ninja-forms',
+                'tab'       => $importer_id ?: 'ninja-forms',
                 'error'     => 'migration_failed',
             ], admin_url('edit.php')));
             exit;
@@ -302,21 +298,35 @@ final class Migration_Wizard {
             }
         }
 
+        if (!empty($schema['skipped_settings']) && is_array($schema['skipped_settings'])) {
+            foreach ($schema['skipped_settings'] as $ss) {
+                $skipped_fields[] = 'Setting: ' . $ss;
+            }
+        }
+
+        $handled_actions = [];
+        if (!empty($schema['handled_actions']) && is_array($schema['handled_actions'])) {
+            foreach ($schema['handled_actions'] as $ha) {
+                $handled_actions[] = sprintf('%s (%s) — %s by Nexley database engine', $ha['label'], $ha['type'], $ha['status']);
+            }
+        }
+
         $notifs_count = count($schema['notifications'] ?? []);
 
         return [
-            'importer_id'   => $importer_id,
-            'importer_name' => $importer_name,
-            'form_title'    => $schema['title'] ?? 'Imported Form',
-            'fields_count'  => $fields_count,
-            'spans_count'   => $spans_count,
-            'notifs_count'  => $notifs_count,
-            'converted'     => $converted_fields,
-            'changed'       => $changed_fields,
-            'skipped'       => $skipped_fields,
-            'status'        => 'Converted',
-            'is_dry_run'    => $is_dry_run,
-            'source_id'     => is_string($source_id) && strlen($source_id) < 100 ? $source_id : '',
+            'importer_id'     => $importer_id,
+            'importer_name'   => $importer_name,
+            'form_title'      => $schema['title'] ?? 'Imported Form',
+            'fields_count'    => $fields_count,
+            'spans_count'     => $spans_count,
+            'notifs_count'    => $notifs_count,
+            'converted'       => $converted_fields,
+            'changed'         => $changed_fields,
+            'skipped'         => $skipped_fields,
+            'handled_actions' => $handled_actions,
+            'status'          => 'Converted',
+            'is_dry_run'      => $is_dry_run,
+            'source_id'       => is_string($source_id) && strlen($source_id) < 100 ? $source_id : '',
         ];
     }
 
@@ -330,20 +340,8 @@ final class Migration_Wizard {
 
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         $raw_tab = sanitize_key($_GET['tab'] ?? 'native');
-        $selected_provider = sanitize_key($_GET['provider'] ?? 'ninja-forms');
 
-        if (in_array($raw_tab, ['ninja-forms', 'gravity-forms', 'cf7', 'importers', 'foreign-forms'], true)) {
-            if (in_array($raw_tab, ['ninja-forms', 'gravity-forms', 'cf7'], true)) {
-                $selected_provider = $raw_tab;
-            }
-            $raw_tab = 'third-party';
-        }
-
-        if (!in_array($selected_provider, ['ninja-forms', 'gravity-forms', 'cf7'], true)) {
-            $selected_provider = 'ninja-forms';
-        }
-
-        $valid_tabs = ['native', 'third-party', 'shortcodes'];
+        $valid_tabs = ['native', 'ninja-forms', 'gravity-forms', 'cf7', 'shortcodes'];
         $current_tab = in_array($raw_tab, $valid_tabs, true) ? $raw_tab : 'native';
 
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -360,15 +358,23 @@ final class Migration_Wizard {
         $tab_url = admin_url('edit.php?post_type=' . Post_Types::CPT_FORM . '&page=' . self::PAGE_SLUG);
 
         $tabs = [
-            'native'      => [
+            'native'        => [
                 'title' => __('Nexley (.nex)', 'nexley-forms'),
                 'icon'  => 'download',
             ],
-            'third-party' => [
-                'title' => __('Third-Party Forms', 'nexley-forms'),
+            'ninja-forms'   => [
+                'title' => __('Ninja Forms', 'nexley-forms'),
                 'icon'  => 'migrate',
             ],
-            'shortcodes'  => [
+            'gravity-forms' => [
+                'title' => __('Gravity Forms', 'nexley-forms'),
+                'icon'  => 'migrate',
+            ],
+            'cf7'           => [
+                'title' => __('Contact Form 7', 'nexley-forms'),
+                'icon'  => 'migrate',
+            ],
+            'shortcodes'    => [
                 'title' => __('Replace Shortcodes', 'nexley-forms'),
                 'icon'  => 'url',
             ],
@@ -468,8 +474,8 @@ final class Migration_Wizard {
                         <?php self::render_shortcodes_tab(); ?>
                     </div>
                 <?php else : ?>
-                    <div role="tabpanel" aria-label="<?php esc_attr_e('Third-Party Forms', 'nexley-forms'); ?>">
-                        <?php self::render_combined_importers_tab($selected_provider); ?>
+                    <div role="tabpanel" aria-label="<?php echo esc_attr($tabs[$current_tab]['title'] ?? ''); ?>">
+                        <?php self::render_importer_tab($current_tab); ?>
                     </div>
                 <?php endif; ?>
             </div>
@@ -533,6 +539,18 @@ final class Migration_Wizard {
                             <?php echo esc_html(sprintf(__('%d notification / email rules converted', 'nexley-forms'), $report['notifs_count'])); ?>
                         </td>
                     </tr>
+                    <?php if (!empty($report['handled_actions'])) : ?>
+                        <tr>
+                            <th><strong><?php esc_html_e('Submissions Handling', 'nexley-forms'); ?></strong></th>
+                            <td>
+                                <ul style="margin: 0; padding-left: 18px; font-size: 12.5px; color: var(--nx-text-muted);">
+                                    <?php foreach ($report['handled_actions'] as $act_item) : ?>
+                                        <li><?php echo esc_html($act_item); ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </td>
+                        </tr>
+                    <?php endif; ?>
                     <?php if (!empty($report['skipped'])) : ?>
                         <tr>
                             <th><strong><?php esc_html_e('Skipped Fields / Reasons', 'nexley-forms'); ?></strong></th>

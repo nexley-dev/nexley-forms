@@ -70,11 +70,27 @@ Nexley Forms includes discovery cards and one-click import wizards:
 
 | Source | Status | Features Supported |
 | :--- | :--- | :--- |
-| **Ninja Forms 3** | *Documented, unverified* | Reads `nf3_forms`, `nf3_fields`, `nf3_actions`, plus `nf3_form_meta`, `nf3_field_meta`, `nf3_action_meta` tables or `.nff` / `.json` export files. Converts fields, email actions, and success messages. |
+| **Ninja Forms 3** | *Export: Verified (.nff)<br>DB: Documented, unverified* | JSON export verified against real .nff export files; database import path documented but unverified against live DB tables (an export file does not reveal DB table structure). Converts fields, layout spans, email actions, and success messages. |
 | **Gravity Forms** | *Documented, unverified* | Reads `gf_form`, `gf_form_meta` or `.json` export files. Maps `layoutGridColumnSpan` (1-12) directly to Nexley 12-column layout. Converts notifications, confirmations, and choices. |
 | **Contact Form 7** | *Direct source code inspected* | Reads `wpcf7_contact_form` posts, parses `[tag* name ...]` syntax, and converts `_mail` configurations into structured notifications. |
 
-> *Note: Ninja Forms and Gravity Forms formats are labeled "Documented, unverified" based on documented schema specifications and sample fixtures.*
+> *Note: Ninja Forms file export conversion is verified against real customer exports. Database migration paths remain labeled "Documented, unverified" pending live table environment testing.*
+
+### Merge Tags & Dynamic Placeholders
+
+Nexley Forms resolves merge tags server-side at notification send time:
+
+| Merge Tag | Description | Scope / Security |
+| :--- | :--- | :--- |
+| `{admin_email}` | Current WordPress administrator email (`get_option('admin_email')`) | Server-side only; never rendered in public HTML or visitor views |
+| `{page_url}` | Sanitized URL of the page where the form was submitted | Server-side capture via validated referer |
+| `{post_title}` | Title of the post or page where the form was submitted | Server-side resolution via `url_to_postid()` |
+| `{site_title}` | Site name (`get_bloginfo('name')`) | Global notification template tag |
+| `{site_url}` | Site homepage URL (`home_url()`) | Global notification template tag |
+| `{date}` / `{time}` | Submission date (`Y-m-d`) and local timestamp (`H:i:s`) | Submission context |
+| `{ip}` | Sanitized client IP address | Notification body |
+| `{_all_fields}` | Formatted responsive HTML table of all submitted inputs | Notification body |
+| `{[field_name]}` | Value of any submitted field by name (e.g., `{email}`, `{fname}`) | Dynamic field value; unknown tags resolve to empty |
 
 ### Shortcode Replacer
 Scans posts and pages for legacy shortcodes (`[ninja_form]`, `[gravityform]`, `[contact-form-7]`), generates dry-run diffs, and safely replaces them with `[nexley_form id="X"]`. All previous content is backed up in post meta with one-click rollback.
@@ -98,6 +114,8 @@ Scans posts and pages for legacy shortcodes (`[ninja_form]`, `[gravityform]`, `[
 - `nexley_forms_webhook_dispatched` `(int $form_id, string $url, int $response_code)`: Fires after an outgoing webhook dispatch.
 
 ### Filter Hooks
+- `nexley_forms_merge_tags` `(array $system_tags, array $data, int $form_id)`: Extend or modify available merge tags for email notifications.
+- `nexley_forms_pre_send_notification` `(array $args, int $form_id, array $notification)`: Filter notification email parameters before `wp_mail()`.
 - `nexley_forms_form_classes` `(array $classes, int $form_id, array $schema)`: Customize outer `<form>` CSS classes.
 - `nexley_forms_allowed_html_tags` `(array $allowed_html)`: Filter `wp_kses` sanitization rules for HTML fields.
 - `nexley_forms_anonymize_ip` `(bool $enabled, int $form_id)`: Override IP anonymization per form.

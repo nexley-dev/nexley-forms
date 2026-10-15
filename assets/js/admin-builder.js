@@ -269,6 +269,8 @@
       gridEl.className = 'nexley-row-grid';
       gridEl.style.setProperty('--nexley-cols', '12');
 
+      const rowItems = [];
+
       (row.columns || []).forEach((col, colIdx) => {
         (col.fields || []).forEach((fieldId) => {
           const field = schema.fields.find(f => f.id === fieldId);
@@ -331,12 +333,54 @@
           // Drag and drop for reordering
           bindFieldDragEvents(fieldEl, rowIdx, colIdx);
 
-          // Resize handle interaction
-          bindResizeHandle(fieldEl, col);
-
           gridEl.appendChild(fieldEl);
+
+          rowItems.push({
+            fieldEl,
+            col,
+            field,
+            colIdx
+          });
         });
       });
+
+      // Compute line placement and bind resize handles (single or dual/gutter)
+      let lineSpan = 0;
+      for (let i = 0; i < rowItems.length; i++) {
+        const item = rowItems[i];
+        const s = item.col.span || (item.field && item.field.span) || 12;
+        if (lineSpan + s > 12) {
+          lineSpan = 0;
+        }
+        item.lineStart = lineSpan;
+        lineSpan += s;
+        item.lineEnd = lineSpan;
+      }
+
+      for (let i = 0; i < rowItems.length; i++) {
+        const item = rowItems[i];
+        const nextItem = rowItems[i + 1];
+        const nextSpan = nextItem ? (nextItem.col.span || (nextItem.field && nextItem.field.span) || 12) : 0;
+        const isAdjacentOnSameLine = nextItem && (item.lineEnd + nextSpan <= 12);
+
+        if (isAdjacentOnSameLine) {
+          // If they reference the same col object, decouple so each has its own independent span
+          if (item.col === nextItem.col) {
+            const newCol = {
+              id: 'col_' + nextItem.field.id,
+              span: nextItem.field.span || item.col.span || 6,
+              fields: [nextItem.field.id]
+            };
+            item.col.fields = item.col.fields.filter(id => id !== nextItem.field.id);
+            const cIdx = row.columns.indexOf(item.col);
+            row.columns.splice(cIdx + 1, 0, newCol);
+            nextItem.col = newCol;
+          }
+          bindResizeHandle(item.fieldEl, item.col, item.field, nextItem.fieldEl, nextItem.col, nextItem.field, row, gridEl);
+        } else {
+          bindResizeHandle(item.fieldEl, item.col, item.field, null, null, null, row, gridEl);
+        }
+      }
 
       // Allow dragging into empty row areas
       gridEl.addEventListener('dragover', (e) => {
@@ -598,45 +642,167 @@
   }
 
   /* --------------------------------------------------------------------------
-   * 6. Resize Handles & Column Spans
+   * 6. Resize Handles & Column Spans (Single & Dual/Middle Gutter)
    * -------------------------------------------------------------------------- */
-  function bindResizeHandle(fieldEl, col) {
-    const handle = fieldEl.querySelector('.nexley-field-resize-handle');
+  function bindResizeHandle(fieldElA, colA, fieldA, fieldElB, colB, fieldB, row, gridEl) {
+    const handle = fieldElA.querySelector('.nexley-field-resize-handle');
     if (!handle) return;
 
-    let startX = 0;
-    let initialSpan = col.span || 12;
+    const isDual = !!(fieldElB && colB && fieldB);
+
+    if (isDual) {
+      handle.classList.add('is-dual');
+      handle.setAttribute('title', 'Drag to resize adjacent fields');
+      handle.setAttribute('aria-label', `Resize between ${fieldA.label || fieldA.name} and ${fieldB.label || fieldB.name}`);
+    } else {
+      handle.classList.remove('is-dual');
+      handle.setAttribute('title', 'Drag to resize column span');
+      handle.setAttribute('aria-label', `Resize column span for ${fieldA ? (fieldA.label || fieldA.name) : 'field'}`);
+    }
 
     handle.addEventListener('mousedown', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      startX = e.clientX;
-      initialSpan = col.span || 12;
 
-      function onMouseMove(moveEvent) {
-        const deltaX = moveEvent.clientX - startX;
-        // Each column in 12-col grid is roughly 60px
-        const spanChange = Math.round(deltaX / 50);
-        let newSpan = Math.max(1, Math.min(12, initialSpan + spanChange));
-        if (newSpan !== col.span) {
-          col.span = newSpan;
-          const field = schema.fields.find(f => (col.fields || []).includes(f.id));
-          if (field) field.span = newSpan;
-          fieldEl.style.setProperty('--span', String(newSpan));
-          fieldEl.querySelector('.nexley-field-span-badge').textContent = getSpanLabel(newSpan);
+      const startX = e.clientX;
+      const initialSpanA = colA.span || (fieldA && fieldA.span) || 6;
+      handle.classList.add('is-resizing');
+      document.body.classList.add('nexley-is-resizing-col');
+
+      const gridWidth = gridEl ? gridEl.getBoundingClientRect().width : 0;
+      const colPitch = gridWidth > 0 ? (gridWidth / 12) : 50;
+
+      if (isDual) {
+        const initialSpanB = colB.span || (fieldB && fieldB.span) || 6;
+        const totalCombined = initialSpanA + initialSpanB;
+
+        function onMouseMove(moveEvent) {
+          const deltaX = moveEvent.clientX - startX;
+          const spanChange = Math.round(deltaX / colPitch);
+
+          // Moving left (deltaX < 0) shrinks A and enlarges B
+          // Moving right (deltaX > 0) enlarges A and shrinks B
+          const newSpanA = Math.max(1, Math.min(totalCombined - 1, initialSpanA + spanChange));
+          const newSpanB = totalCombined - newSpanA;
+
+          if (newSpanA !== colA.span || newSpanB !== colB.span) {
+            colA.span = newSpanA;
+            colB.span = newSpanB;
+            if (fieldA) fieldA.span = newSpanA;
+            if (fieldB) fieldB.span = newSpanB;
+
+            fieldElA.style.setProperty('--span', String(newSpanA));
+            fieldElB.style.setProperty('--span', String(newSpanB));
+
+            const badgeA = fieldElA.querySelector('.nexley-field-span-badge');
+            if (badgeA) badgeA.textContent = getSpanLabel(newSpanA);
+
+            const badgeB = fieldElB.querySelector('.nexley-field-span-badge');
+            if (badgeB) badgeB.textContent = getSpanLabel(newSpanB);
+
+            fieldElA.setAttribute('aria-label', `${fieldA.label || fieldA.name}, column span ${newSpanA}`);
+            fieldElB.setAttribute('aria-label', `${fieldB.label || fieldB.name}, column span ${newSpanB}`);
+
+            const spanSelect = document.getElementById('nexley_dr_span');
+            if (spanSelect) {
+              if (activeFieldId === fieldA.id) spanSelect.value = String(newSpanA);
+              if (activeFieldId === fieldB.id) spanSelect.value = String(newSpanB);
+            }
+          }
+        }
+
+        function onMouseUp() {
+          document.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('mouseup', onMouseUp);
+          document.body.classList.remove('nexley-is-resizing-col');
+          handle.classList.remove('is-resizing');
+          pushState();
+          renderCanvas();
+          announce(`Resized columns: ${fieldA.label || fieldA.name} to ${colA.span}, ${fieldB.label || fieldB.name} to ${colB.span}`);
+        }
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+      } else {
+        // Single field resize
+        function onMouseMove(moveEvent) {
+          const deltaX = moveEvent.clientX - startX;
+          const spanChange = Math.round(deltaX / colPitch);
+          const newSpan = Math.max(1, Math.min(12, initialSpanA + spanChange));
+
+          if (newSpan !== colA.span) {
+            colA.span = newSpan;
+            if (fieldA) fieldA.span = newSpan;
+            fieldElA.style.setProperty('--span', String(newSpan));
+
+            const badge = fieldElA.querySelector('.nexley-field-span-badge');
+            if (badge) badge.textContent = getSpanLabel(newSpan);
+
+            fieldElA.setAttribute('aria-label', `${fieldA.label || fieldA.name}, column span ${newSpan}`);
+
+            const spanSelect = document.getElementById('nexley_dr_span');
+            if (spanSelect && activeFieldId === fieldA.id) {
+              spanSelect.value = String(newSpan);
+            }
+          }
+        }
+
+        function onMouseUp() {
+          document.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('mouseup', onMouseUp);
+          document.body.classList.remove('nexley-is-resizing-col');
+          handle.classList.remove('is-resizing');
+          pushState();
+          renderCanvas();
+          announce(`Column span updated to ${colA.span}`);
+        }
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+      }
+    });
+
+    // Keyboard support on handle
+    handle.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (isDual) {
+          const spanA = colA.span || (fieldA && fieldA.span) || 6;
+          const spanB = colB.span || (fieldB && fieldB.span) || 6;
+          const total = spanA + spanB;
+          let nextSpanA = spanA;
+
+          if (e.key === 'ArrowLeft' && spanA > 1) {
+            nextSpanA--;
+          } else if (e.key === 'ArrowRight' && spanA < (total - 1)) {
+            nextSpanA++;
+          }
+
+          if (nextSpanA !== spanA) {
+            const nextSpanB = total - nextSpanA;
+            colA.span = nextSpanA;
+            colB.span = nextSpanB;
+            if (fieldA) fieldA.span = nextSpanA;
+            if (fieldB) fieldB.span = nextSpanB;
+            pushState();
+            renderCanvas();
+            announce(`Resized columns: ${fieldA.label || fieldA.name} to ${nextSpanA}, ${fieldB.label || fieldB.name} to ${nextSpanB}`);
+          }
+        } else {
+          let currentSpan = colA.span || (fieldA && fieldA.span) || 12;
+          if (e.key === 'ArrowLeft' && currentSpan > 1) currentSpan--;
+          if (e.key === 'ArrowRight' && currentSpan < 12) currentSpan++;
+          if (currentSpan !== (colA.span || 12)) {
+            colA.span = currentSpan;
+            if (fieldA) fieldA.span = currentSpan;
+            pushState();
+            renderCanvas();
+            announce(`Column span updated to ${currentSpan}`);
+          }
         }
       }
-
-      function onMouseUp() {
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
-        pushState();
-        renderCanvas();
-        announce(`Column span updated to ${col.span}`);
-      }
-
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
     });
   }
 
@@ -702,11 +868,17 @@
         <label for="nexley_dr_span"><strong>Column Span (Width)</strong></label>
         <select id="nexley_dr_span" class="widefat">
           <option value="12" ${field.span === 12 ? 'selected' : ''}>Full Width (12 columns)</option>
-          <option value="6" ${field.span === 6 ? 'selected' : ''}>One Half (6 columns)</option>
-          <option value="4" ${field.span === 4 ? 'selected' : ''}>One Third (4 columns)</option>
-          <option value="8" ${field.span === 8 ? 'selected' : ''}>Two Thirds (8 columns)</option>
-          <option value="3" ${field.span === 3 ? 'selected' : ''}>One Quarter (3 columns)</option>
-          <option value="9" ${field.span === 9 ? 'selected' : ''}>Three Quarters (9 columns)</option>
+          <option value="11" ${field.span === 11 ? 'selected' : ''}>11/12 (11 columns)</option>
+          <option value="10" ${field.span === 10 ? 'selected' : ''}>5/6 (10 columns)</option>
+          <option value="9" ${field.span === 9 ? 'selected' : ''}>3/4 (9 columns)</option>
+          <option value="8" ${field.span === 8 ? 'selected' : ''}>2/3 (8 columns)</option>
+          <option value="7" ${field.span === 7 ? 'selected' : ''}>7/12 (7 columns)</option>
+          <option value="6" ${field.span === 6 ? 'selected' : ''}>1/2 (6 columns)</option>
+          <option value="5" ${field.span === 5 ? 'selected' : ''}>5/12 (5 columns)</option>
+          <option value="4" ${field.span === 4 ? 'selected' : ''}>1/3 (4 columns)</option>
+          <option value="3" ${field.span === 3 ? 'selected' : ''}>1/4 (3 columns)</option>
+          <option value="2" ${field.span === 2 ? 'selected' : ''}>1/6 (2 columns)</option>
+          <option value="1" ${field.span === 1 ? 'selected' : ''}>1/12 (1 column)</option>
         </select>
       </div>
 
@@ -1057,7 +1229,12 @@
           </tr>
           <tr>
             <th scope="row">Message Body</th>
-            <td><textarea rows="5" class="large-text code nexley-notif-body" data-idx="${idx}">${escapeHtml(n.body || '{_all_fields}')}</textarea></td>
+            <td>
+              <textarea rows="5" class="large-text code nexley-notif-body" data-idx="${idx}">${escapeHtml(n.body || '{_all_fields}')}</textarea>
+              <p class="description" style="margin-top:6px;font-size:12px;color:var(--nx-text-muted);">
+                Supported tags: <code>{_all_fields}</code>, <code>{admin_email}</code>, <code>{page_url}</code>, <code>{post_title}</code>, <code>{site_title}</code>, <code>{site_url}</code>, <code>{date}</code>, <code>{time}</code>, <code>{ip}</code>, and field tags (e.g. <code>{email}</code>).
+              </p>
+            </td>
           </tr>
         </table>
       `;

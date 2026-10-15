@@ -1993,10 +1993,64 @@ body.post-type-nexley_form #postbox-container-2 {
   width: 6px;
   cursor: col-resize;
   background: transparent;
+  z-index: 5;
+  touch-action: none;
 }
 
-.nexley-field-resize-handle:hover {
-  background: #2563eb;
+.nexley-field-resize-handle:focus-visible {
+  outline: 2px solid var(--wp-admin-theme-color, #2271b1);
+  outline-offset: 1px;
+}
+
+.nexley-field-resize-handle:not(.is-dual):hover,
+.nexley-field-resize-handle:not(.is-dual).is-resizing {
+  background: var(--wp-admin-theme-color, #2271b1);
+  border-radius: 0 var(--nx-radius, 4px) var(--nx-radius, 4px) 0;
+}
+
+/* Dual resize handle between two side-by-side fields in a row */
+.nexley-field-resize-handle.is-dual {
+  right: -17px;
+  width: 22px;
+  z-index: 10;
+  cursor: col-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nexley-field-resize-handle.is-dual::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-20%);
+  width: 4px;
+  border-radius: 9999px;
+  background: var(--wp-admin-theme-color, #2271b1);
+  opacity: 0;
+  transition: opacity 0.15s ease, background-color 0.15s ease;
+  pointer-events: none;
+}
+
+.nexley-field-resize-handle.is-dual:hover::after,
+.nexley-field-resize-handle.is-dual.is-resizing::after,
+.nexley-field-resize-handle.is-dual:focus-visible::after {
+  opacity: 1;
+}
+
+/* Global state while dragging any column resize handle */
+body.nexley-is-resizing-col {
+  cursor: col-resize !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+body.nexley-is-resizing-col * {
+  cursor: col-resize !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
 }
 
 .nexley-canvas-footer {

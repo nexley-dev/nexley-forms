@@ -244,9 +244,14 @@ final class Meta_Boxes {
                     <?php endforeach; ?>
                 <?php endif; ?>
                 <button type="button" class="nexley-tag-pill nexley-tag-pill--system" data-tag="{_all_fields}">{_all_fields}</button>
+                <button type="button" class="nexley-tag-pill nexley-tag-pill--system" data-tag="{admin_email}">{admin_email}</button>
+                <button type="button" class="nexley-tag-pill nexley-tag-pill--system" data-tag="{page_url}">{page_url}</button>
+                <button type="button" class="nexley-tag-pill nexley-tag-pill--system" data-tag="{post_title}">{post_title}</button>
                 <button type="button" class="nexley-tag-pill nexley-tag-pill--system" data-tag="{site_title}">{site_title}</button>
                 <button type="button" class="nexley-tag-pill nexley-tag-pill--system" data-tag="{site_url}">{site_url}</button>
                 <button type="button" class="nexley-tag-pill nexley-tag-pill--system" data-tag="{date}">{date}</button>
+                <button type="button" class="nexley-tag-pill nexley-tag-pill--system" data-tag="{time}">{time}</button>
+                <button type="button" class="nexley-tag-pill nexley-tag-pill--system" data-tag="{ip}">{ip}</button>
             </div>
         </div>
         <?php

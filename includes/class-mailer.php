@@ -222,6 +222,27 @@ final class Mailer {
             return '';
         }
 
+        // Safe capture of page_url and post_title
+        $page_url = '';
+        if (!empty($data['_page_url'])) {
+            $page_url = esc_url_raw((string) $data['_page_url']);
+        } elseif (!empty($_SERVER['HTTP_REFERER'])) {
+            $ref = esc_url_raw(wp_unslash($_SERVER['HTTP_REFERER']));
+            $page_url = wp_validate_redirect($ref, '') ?: $ref;
+        } elseif (function_exists('wp_get_referer') && wp_get_referer()) {
+            $page_url = esc_url_raw((string) wp_get_referer());
+        }
+
+        $post_title = '';
+        if (!empty($data['_post_title'])) {
+            $post_title = sanitize_text_field((string) $data['_post_title']);
+        } elseif ($page_url !== '') {
+            $ref_post_id = url_to_postid($page_url);
+            if ($ref_post_id > 0) {
+                $post_title = sanitize_text_field(get_the_title($ref_post_id));
+            }
+        }
+
         // Format all fields table
         $all_fields_html = self::generate_all_fields_list($data);
 
@@ -230,6 +251,8 @@ final class Mailer {
             '{site_title}'   => get_bloginfo('name'),
             '{site_url}'     => home_url(),
             '{admin_email}'  => (string) get_option('admin_email'),
+            '{page_url}'     => $page_url,
+            '{post_title}'   => $post_title,
             '{form_id}'      => (string) $form_id,
             '{form_title}'   => get_the_title($form_id) ?: sprintf('Form #%d', $form_id),
             '{date}'         => wp_date('Y-m-d'),
@@ -238,10 +261,19 @@ final class Mailer {
             '{_all_fields}'  => $all_fields_html,
         ];
 
+        /**
+         * Filters the merge tags available for replacement.
+         *
+         * @param array<string, string> $system_tags Associative array of tag => value.
+         * @param array<string, mixed>  $data        Submitted form data.
+         * @param int                   $form_id     Form ID.
+         */
+        $system_tags = apply_filters('nexley_forms_merge_tags', $system_tags, $data, $form_id);
+
         $output = str_replace(array_keys($system_tags), array_values($system_tags), $template);
 
-        // Dynamic field tags: {field_name}
-        $output = (string) preg_replace_callback('/\{([a-zA-Z0-9_-]+)\}/', static function (array $matches) use ($data): string {
+        // Dynamic field tags: {field_name}. Unknown tags resolve to empty string.
+        $output = (string) preg_replace_callback('/\{([a-zA-Z0-9_:-]+)\}/', static function (array $matches) use ($data): string {
             $key = $matches[1];
             if (isset($data[$key])) {
                 $val = $data[$key];
