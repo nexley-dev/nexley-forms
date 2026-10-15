@@ -27,14 +27,41 @@ final class Meta_Boxes {
     public static function init(): void {
         add_action('add_meta_boxes', [self::class, 'register_meta_boxes']);
         add_action('save_post_' . Post_Types::CPT_FORM, [self::class, 'save_form_meta']);
-        add_action('edit_form_after_title', [self::class, 'render_shortcode_notice']);
+        add_filter('screen_layout_columns', [self::class, 'filter_screen_layout_columns'], 10, 2);
+        add_filter('get_user_option_screen_layout_' . Post_Types::CPT_FORM, [self::class, 'filter_user_screen_layout']);
         Builder::init();
+    }
+
+    /**
+     * Force 1-column layout for Nexley Form edit screen.
+     *
+     * @param array<string, int> $columns
+     * @param string             $screen
+     * @return array<string, int>
+     */
+    public static function filter_screen_layout_columns(array $columns, string $screen): array {
+        if ($screen === Post_Types::CPT_FORM) {
+            $columns[Post_Types::CPT_FORM] = 1;
+        }
+        return $columns;
+    }
+
+    /**
+     * Force user option for screen layout to 1 column.
+     *
+     * @return int
+     */
+    public static function filter_user_screen_layout(): int {
+        return 1;
     }
 
     /**
      * Register meta boxes.
      */
     public static function register_meta_boxes(): void {
+        // Remove native submitdiv meta box from CPT_FORM
+        remove_meta_box('submitdiv', Post_Types::CPT_FORM, 'side');
+
         // Form post type meta box: Full Drag-and-Drop Builder
         add_meta_box(
             'nexley_meta_form_editor',
@@ -54,31 +81,6 @@ final class Meta_Boxes {
             'normal',
             'high'
         );
-    }
-
-    /**
-     * Render quick shortcode copy bar under post title.
-     *
-     * @param \WP_Post $post
-     */
-    public static function render_shortcode_notice(\WP_Post $post): void {
-        if ($post->post_type !== Post_Types::CPT_FORM) {
-            return;
-        }
-
-        $shortcode = sprintf('[nexley_form id="%d"]', $post->ID);
-        ?>
-        <div class="nexley-admin-shortcode-bar">
-            <span class="nexley-shortcode-label"><?php esc_html_e('Copy this shortcode and paste it into your post, page, or text widget:', 'nexley-forms'); ?></span>
-            <div class="nexley-shortcode-input-group">
-                <input type="text" id="nexley_form_shortcode_input" readonly value="<?php echo esc_attr($shortcode); ?>" class="large-text code" />
-                <button type="button" class="button button-secondary nexley-copy-shortcode" data-target="#nexley_form_shortcode_input">
-                    <?php Icons::render('copy', 14); ?>
-                    <span class="nexley-copy-label"><?php esc_html_e('Copy Shortcode', 'nexley-forms'); ?></span>
-                </button>
-            </div>
-        </div>
-        <?php
     }
 
     /**

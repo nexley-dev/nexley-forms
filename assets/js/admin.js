@@ -288,19 +288,19 @@
       copyTextToClipboard(shortcode);
 
       const $label = $btn.find('.nexley-copy-label');
-      const $icon = $btn.find('.dashicons, .nexley-icon');
+      const $use = $btn.find('.nexley-icon use');
       const origText = $label.text();
 
       $label.text(i18n.copied);
-      if ($icon.is('.dashicons')) {
-        $icon.removeClass('dashicons-admin-page').addClass('dashicons-yes');
+      if ($use.length) {
+        $use.attr('href', '#nexley-icon-check');
       }
       $btn.addClass('is-copied');
 
       setTimeout(function () {
         $label.text(origText);
-        if ($icon.is('.dashicons')) {
-          $icon.removeClass('dashicons-yes').addClass('dashicons-admin-page');
+        if ($use.length) {
+          $use.attr('href', '#nexley-icon-copy');
         }
         $btn.removeClass('is-copied');
       }, 2000);
@@ -325,5 +325,152 @@
       }
       $temp.remove();
     }
+
+    /* ==========================================================================
+       6. Import / Export Redesign: Drop Zones, Tabs & Select-All
+       ========================================================================== */
+
+    // Accessible arrow-key navigation for Import / Export tabs
+    const $tabLinks = $('.nexley-import-tab-link');
+    if ($tabLinks.length) {
+      $tabLinks.on('keydown', function (e) {
+        const index = $tabLinks.index(this);
+        let targetIndex = -1;
+
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          targetIndex = (index + 1) % $tabLinks.length;
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          targetIndex = (index - 1 + $tabLinks.length) % $tabLinks.length;
+        } else if (e.key === 'Home') {
+          targetIndex = 0;
+        } else if (e.key === 'End') {
+          targetIndex = $tabLinks.length - 1;
+        }
+
+        if (targetIndex !== -1) {
+          e.preventDefault();
+          const targetLink = $tabLinks.eq(targetIndex);
+          targetLink.focus();
+          window.location.href = targetLink.attr('href');
+        }
+      });
+    }
+
+    // Drop Zone Click & Drag-and-Drop handling
+    $('.nexley-dropzone').each(function () {
+      const $zone = $(this);
+      const $fileInput = $zone.find('.nexley-file-input');
+      const $form = $zone.closest('form');
+      const $submitBtns = $form.find('.nexley-dropzone-submit');
+      const $filename = $zone.find('.nexley-filename');
+      const $filesize = $zone.find('.nexley-filesize');
+      const $removeBtn = $zone.find('.nexley-dropzone-remove-file');
+
+      function formatBytes(bytes) {
+        if (!bytes || bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+      }
+
+      function updateFileDisplay(file) {
+        if (file) {
+          $filename.text(file.name);
+          $filesize.text('(' + formatBytes(file.size) + ')');
+          $zone.addClass('has-file');
+          $submitBtns.prop('disabled', false);
+        } else {
+          $filename.text('');
+          $filesize.text('');
+          $zone.removeClass('has-file');
+          $submitBtns.prop('disabled', true);
+        }
+      }
+
+      // Clicking dropzone triggers file input
+      $zone.on('click', function (e) {
+        if ($(e.target).is($removeBtn) || $(e.target).is($fileInput)) {
+          return;
+        }
+        $fileInput.trigger('click');
+      });
+
+      // Keyboard activation via Enter/Space
+      $zone.on('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          if (!$(e.target).is($removeBtn) && !$(e.target).is($fileInput)) {
+            e.preventDefault();
+            $fileInput.trigger('click');
+          }
+        }
+      });
+
+      // Native file input change
+      $fileInput.on('change', function () {
+        const file = this.files && this.files[0];
+        updateFileDisplay(file);
+      });
+
+      // Remove button click
+      $removeBtn.on('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $fileInput.val('');
+        updateFileDisplay(null);
+      });
+
+      // Drag and drop events
+      $zone.on('dragover dragenter', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $zone.addClass('is-dragover');
+      });
+
+      $zone.on('dragleave dragend drop', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $zone.removeClass('is-dragover');
+      });
+
+      $zone.on('drop', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const dt = e.originalEvent.dataTransfer;
+        if (dt && dt.files && dt.files.length) {
+          $fileInput[0].files = dt.files;
+          updateFileDisplay(dt.files[0]);
+        }
+      });
+    });
+
+    // Select-all checkbox for detected forms table
+    $('.nexley-select-all-forms').on('change', function () {
+      const isChecked = $(this).is(':checked');
+      const $table = $(this).closest('table');
+      $table.find('.nexley-form-checkbox').prop('checked', isChecked);
+    });
+
+    $('.nexley-form-checkbox').on('change', function () {
+      const $table = $(this).closest('table');
+      const allChecked = $table.find('.nexley-form-checkbox:not(:checked)').length === 0;
+      $table.find('.nexley-select-all-forms').prop('checked', allChecked);
+    });
+
+    // Third-party importer dropdown provider switcher
+    const $providerSelect = $('#nexley-provider-select');
+    if ($providerSelect.length) {
+      $providerSelect.on('change', function () {
+        const selected = $(this).val();
+        $('.nexley-provider-panel').hide();
+        $('#nexley-provider-panel-' + selected).show();
+        if (window.history && window.history.replaceState) {
+          const url = new URL(window.location.href);
+          url.searchParams.set('provider', selected);
+          window.history.replaceState(null, '', url.toString());
+        }
+      });
+    }
   });
 })(jQuery);
+

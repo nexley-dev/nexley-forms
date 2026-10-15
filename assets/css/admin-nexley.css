@@ -7,24 +7,74 @@
  */
 
 :root {
-  --nx-green: #0969da;
-  --nx-green-hover: #085cc1;
-  --nx-black: #1f2328;
-  --nx-dark: #24292f;
+  --nx-green: var(--wp-admin-theme-color, #2271b1);
+  --nx-green-hover: var(--wp-admin-theme-color-darker-10, #135e96);
+  --nx-black: var(--wp-admin-color-text, #1d2327);
+  --nx-dark: #2c3338;
   --nx-white: #ffffff;
-  --nx-canvas: #f6f8fa;
-  --nx-canvas-subtle: #eaeef2;
-  --nx-border: #d0d7de;
-  --nx-border-dark: #afb8c1;
-  --nx-border-hover: #8c959f;
-  --nx-text: #1f2328;
-  --nx-text-muted: #656d76;
-  --nx-danger: #cf222e;
-  --nx-success: #1a7f37;
+  --nx-canvas: #f0f0f1;
+  --nx-canvas-subtle: #f6f7f7;
+  --nx-border: var(--wp-admin-color-border, #dcdcde);
+  --nx-border-dark: #c3c4c7;
+  --nx-border-hover: #8c8f94;
+  --nx-text: var(--wp-admin-color-text, #1d2327);
+  --nx-text-muted: var(--wp-admin-color-secondary, #646970);
+  --nx-danger: #d63638;
+  --nx-success: #00a32a;
   --nx-radius: 6px;
   --nx-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --nx-font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
   --nx-font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
+
+  /* Nexley Semantic Icon Tokens */
+  --nexley-accent: var(--wp-admin-theme-color, #2271b1);
+  --nexley-accent-hover: var(--wp-admin-theme-color-darker-10, #135e96);
+  --nexley-icon-muted: var(--wp-admin-color-secondary, #646970);
+  --nexley-icon-hover: var(--wp-admin-color-text, #1d2327);
+  --nexley-icon-active: var(--wp-admin-theme-color, #2271b1);
+  --nexley-icon-danger: #d63638;
+}
+
+/* WP Admin Menu Icon (Mask-Image Recoloring) */
+#adminmenu #menu-posts-nexley_form .wp-menu-image {
+  background-color: currentColor;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='7' height='9' x='3' y='3' rx='1'/%3E%3Crect width='7' height='5' x='14' y='3' rx='1'/%3E%3Crect width='7' height='9' x='14' y='12' rx='1'/%3E%3Crect width='7' height='5' x='3' y='16' rx='1'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='7' height='9' x='3' y='3' rx='1'/%3E%3Crect width='7' height='5' x='14' y='3' rx='1'/%3E%3Crect width='7' height='9' x='14' y='12' rx='1'/%3E%3Crect width='7' height='5' x='3' y='16' rx='1'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: 20px 20px;
+  mask-size: 20px 20px;
+}
+#adminmenu #menu-posts-nexley_form .wp-menu-image:before {
+  display: none !important;
+  content: "" !important;
+}
+
+/* Core Icon Utilities */
+.nexley-icon {
+  display: inline-block;
+  vertical-align: middle;
+  stroke: currentColor;
+  fill: none;
+  flex-shrink: 0;
+  transition: color 120ms ease;
+}
+
+.nexley-icon--16 {
+  width: 16px;
+  height: 16px;
+}
+
+.nexley-icon--20 {
+  width: 20px;
+  height: 20px;
+}
+
+.nexley-icon--24 {
+  width: 24px;
+  height: 24px;
 }
 
 /* ==========================================================================
@@ -60,7 +110,7 @@ body.nexley-admin-theme .wrap > h1.wp-heading-inline {
 /* "Add New" Button near title */
 body.nexley-admin-theme .page-title-action {
   font-family: var(--nx-font-sans) !important;
-  font-size: 11px !important;
+  font-size: 14px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
   background: var(--nx-white) !important;
@@ -115,7 +165,7 @@ body.nexley-admin-theme .nexley-btn-primary {
   border: 1px solid var(--nx-green) !important;
   color: #ffffff !important;
   font-family: var(--nx-font-sans) !important;
-  font-size: 13px !important;
+  font-size: 14px !important;
   font-weight: 600 !important;
   border-radius: var(--nx-radius) !important;
   box-shadow: none !important;
@@ -158,7 +208,7 @@ body.nexley-admin-theme .button:not(.button-primary):not(#publish) {
   border: 1px solid var(--nx-border) !important;
   color: var(--nx-black) !important;
   font-family: var(--nx-font-sans) !important;
-  font-size: 13px !important;
+  font-size: 14px !important;
   font-weight: 400 !important;
   border-radius: var(--nx-radius) !important;
   box-shadow: none !important;
@@ -189,8 +239,8 @@ body.nexley-admin-theme .button:not(.button-primary):not(#publish):focus {
 body.nexley-admin-theme .button .nexley-icon,
 body.nexley-admin-theme .button-secondary .nexley-icon,
 body.nexley-admin-theme .button-primary .nexley-icon {
-  width: 15px !important;
-  height: 15px !important;
+  width: 16px !important;
+  height: 16px !important;
   vertical-align: middle !important;
   flex-shrink: 0;
   color: currentColor !important;
@@ -214,21 +264,21 @@ body.nexley-admin-theme .button.nexley-undo-btn .nexley-icon,
 body.nexley-admin-theme .button.nexley-redo-btn .nexley-icon,
 body.nexley-admin-theme .button.nexley-del-row-btn .nexley-icon,
 body.nexley-admin-theme .button.nexley-del-notif-btn .nexley-icon {
-  width: 16px !important;
-  height: 16px !important;
+  width: 24px !important;
+  height: 24px !important;
 }
 
 /* Small button modifier */
 body.nexley-admin-theme .button-small {
   padding: 3px 8px !important;
-  font-size: 11px !important;
+  font-size: 14px !important;
   min-height: 28px !important;
 }
 
 /* Delete / Trash link */
 body.nexley-admin-theme #delete-action .submitdelete {
   font-family: var(--nx-font-sans);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
   color: var(--nx-danger);
@@ -259,7 +309,7 @@ body.nexley-admin-theme textarea {
   box-shadow: none !important;
   color: var(--nx-black) !important;
   font-family: var(--nx-font-body) !important;
-  font-size: 13px !important;
+  font-size: 14px !important;
   padding: 8px 12px !important;
   line-height: 1.5 !important;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
@@ -297,7 +347,7 @@ body.nexley-admin-theme #titlediv #title:focus {
 /* Description text in meta boxes */
 body.nexley-admin-theme .description {
   color: var(--nx-text-muted) !important;
-  font-size: 12px !important;
+  font-size: 14px !important;
   font-style: normal !important;
   line-height: 1.5 !important;
   margin-top: 5px !important;
@@ -325,7 +375,7 @@ body.nexley-admin-theme .postbox-header {
 
 body.nexley-admin-theme .postbox-header .hndle {
   font-family: var(--nx-font-sans) !important;
-  font-size: 12px !important;
+  font-size: 14px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
   color: var(--nx-black) !important;
@@ -353,55 +403,13 @@ body.nexley-admin-theme #submitdiv #major-publishing-actions {
 body.nexley-admin-theme #submitdiv .misc-pub-section {
   border-bottom: 1px solid var(--nx-border) !important;
   padding: 10px 16px !important;
-  font-size: 12px !important;
+  font-size: 14px !important;
   color: var(--nx-text-muted) !important;
 }
 
 /* ==========================================================================
-   5. SHORTCODE BAR (UNDER TITLE)
+   5. SHORTCODE COPY BUTTON (LIST TABLE & GENERAL)
    ========================================================================== */
-
-body.nexley-admin-theme .nexley-admin-shortcode-bar {
-  background: var(--nx-white);
-  border: 1px solid var(--nx-border);
-  border-left: 4px solid var(--nx-green);
-  padding: 14px 20px;
-  margin: 16px 0 24px 0;
-  border-radius: var(--nx-radius);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
-}
-
-body.nexley-admin-theme .nexley-admin-shortcode-bar .nexley-shortcode-label {
-  display: block;
-  font-family: var(--nx-font-sans);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--nx-black);
-  margin-bottom: 8px;
-}
-
-body.nexley-admin-theme .nexley-shortcode-input-group {
-  display: flex;
-  gap: 8px;
-  align-items: stretch;
-}
-
-body.nexley-admin-theme .nexley-shortcode-input-group input {
-  max-width: 380px;
-  height: 36px !important;
-  min-height: 36px !important;
-  line-height: 34px !important;
-  background-color: var(--nx-canvas) !important;
-  font-family: var(--nx-font-mono) !important;
-  font-size: 12.5px !important;
-  font-weight: 600 !important;
-  color: var(--nx-black) !important;
-  border: 1px solid var(--nx-border) !important;
-  border-radius: var(--nx-radius) !important;
-  padding: 0 12px !important;
-  box-sizing: border-box !important;
-}
 
 body.nexley-admin-theme .nexley-copy-shortcode {
   display: inline-flex !important;
@@ -416,7 +424,7 @@ body.nexley-admin-theme .nexley-copy-shortcode {
   background: var(--nx-white) !important;
   color: var(--nx-black) !important;
   font-family: var(--nx-font-sans) !important;
-  font-size: 11px !important;
+  font-size: 14px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
   box-sizing: border-box !important;
@@ -431,16 +439,13 @@ body.nexley-admin-theme .nexley-copy-shortcode:hover {
   border-color: var(--nx-black) !important;
 }
 
-body.nexley-admin-theme .nexley-copy-shortcode:hover .dashicons {
+body.nexley-admin-theme .nexley-copy-shortcode:hover .nexley-icon {
   color: var(--nx-green) !important;
 }
 
-body.nexley-admin-theme .nexley-copy-shortcode .dashicons,
-body.nexley-admin-theme .nexley-copy-shortcode .dashicons:before {
-  width: 14px !important;
-  height: 14px !important;
-  font-size: 14px !important;
-  line-height: 14px !important;
+body.nexley-admin-theme .nexley-copy-shortcode .nexley-icon {
+  width: 16px !important;
+  height: 16px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -487,7 +492,7 @@ body.nexley-admin-theme .nexley-tag-generator-bar {
 
 body.nexley-admin-theme .nexley-toolbar-label {
   font-family: var(--nx-font-sans);
-  font-size: 10.5px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--nx-text-muted);
   margin-right: 6px;
@@ -498,7 +503,7 @@ body.nexley-admin-theme .nexley-tag-btn {
   display: inline-flex;
   align-items: center;
   font-family: var(--nx-font-sans) !important;
-  font-size: 11px !important;
+  font-size: 14px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
   height: 30px !important;
@@ -548,7 +553,7 @@ body.nexley-admin-theme .nexley-textarea-container textarea {
   border-radius: 0 0 var(--nx-radius) var(--nx-radius) !important;
   border: 1px solid var(--nx-border) !important;
   font-family: var(--nx-font-mono) !important;
-  font-size: 13.5px !important;
+  font-size: 15px !important;
   line-height: 1.6 !important;
   tab-size: 2 !important;
   padding: 16px !important;
@@ -614,7 +619,7 @@ body.nexley-admin-theme .nexley-modal-header {
 body.nexley-admin-theme .nexley-modal-header h3 {
   margin: 0;
   font-family: var(--nx-font-sans);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
   color: var(--nx-black);
@@ -647,7 +652,7 @@ body.nexley-admin-theme .nexley-modal-field {
 body.nexley-admin-theme .nexley-modal-field label {
   display: block;
   font-family: var(--nx-font-sans);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
   margin-bottom: 6px;
@@ -664,7 +669,7 @@ body.nexley-admin-theme .nexley-modal-preview-box {
 
 body.nexley-admin-theme .nexley-modal-preview-box label {
   font-family: var(--nx-font-sans);
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
   color: var(--nx-text-muted);
@@ -679,7 +684,7 @@ body.nexley-admin-theme .nexley-modal-preview-box code {
   padding: 8px 12px;
   border-radius: var(--nx-radius);
   font-family: var(--nx-font-mono);
-  font-size: 12.5px;
+  font-size: 14px;
   word-break: break-all;
 }
 
@@ -708,7 +713,7 @@ body.nexley-admin-theme .nexley-tag-pills-bar {
 body.nexley-admin-theme .nexley-tag-pills-title {
   display: block;
   font-family: var(--nx-font-sans);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--nx-text-muted);
   margin-bottom: 10px;
@@ -728,7 +733,7 @@ body.nexley-admin-theme .nexley-tag-pill {
   border-radius: var(--nx-radius);
   padding: 4px 9px;
   font-family: var(--nx-font-mono);
-  font-size: 11.5px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease-in-out;
@@ -772,7 +777,7 @@ body.nexley-admin-theme .wp-list-table tfoot th {
   border-bottom: 1px solid var(--nx-border-hover) !important;
   color: var(--nx-black) !important;
   font-family: var(--nx-font-sans) !important;
-  font-size: 11px !important;
+  font-size: 14px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
   padding: 12px 14px !important;
@@ -809,7 +814,7 @@ body.nexley-admin-theme .nexley-shortcode-text {
   padding: 4px 8px;
   border-radius: var(--nx-radius);
   font-family: var(--nx-font-mono);
-  font-size: 11.5px;
+  font-size: 14px;
   border: 1px solid var(--nx-border);
   color: var(--nx-black);
 }
@@ -818,16 +823,13 @@ body.nexley-admin-theme .nexley-shortcode-cell .nexley-copy-shortcode {
   height: 26px !important;
   min-height: 26px !important;
   padding: 0 8px !important;
-  font-size: 10px !important;
+  font-size: 14px !important;
   gap: 4px !important;
 }
 
-body.nexley-admin-theme .nexley-shortcode-cell .nexley-copy-shortcode .dashicons,
-body.nexley-admin-theme .nexley-shortcode-cell .nexley-copy-shortcode .dashicons:before {
-  width: 12px !important;
-  height: 12px !important;
-  font-size: 12px !important;
-  line-height: 12px !important;
+body.nexley-admin-theme .nexley-shortcode-cell .nexley-copy-shortcode .nexley-icon {
+  width: 14px !important;
+  height: 14px !important;
 }
 
 body.nexley-admin-theme .nexley-entry-count-badge {
@@ -838,7 +840,7 @@ body.nexley-admin-theme .nexley-entry-count-badge {
   border: 1px solid var(--nx-border-dark);
   border-radius: var(--nx-radius);
   font-family: var(--nx-font-sans);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
   text-decoration: none;
@@ -864,7 +866,7 @@ body.nexley-admin-theme .tablenav select {
   padding: 0 28px 0 12px !important;
   border-radius: var(--nx-radius) !important;
   font-family: var(--nx-font-sans);
-  font-size: 11.5px;
+  font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
   box-sizing: border-box !important;
@@ -878,7 +880,7 @@ body.nexley-admin-theme .tablenav input[type="submit"] {
   line-height: 34px !important;
   padding: 0 16px !important;
   font-family: var(--nx-font-sans) !important;
-  font-size: 11.5px !important;
+  font-size: 14px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
   border-radius: var(--nx-radius) !important;
@@ -892,7 +894,7 @@ body.nexley-admin-theme .search-box input[type="search"] {
   min-height: 36px !important;
   line-height: 34px !important;
   padding: 0 12px !important;
-  font-size: 13px !important;
+  font-size: 14px !important;
   border-radius: var(--nx-radius) !important;
   box-sizing: border-box !important;
   vertical-align: middle !important;
@@ -905,7 +907,7 @@ body.nexley-admin-theme .search-box .button {
   line-height: 34px !important;
   padding: 0 16px !important;
   font-family: var(--nx-font-sans) !important;
-  font-size: 11.5px !important;
+  font-size: 14px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
   border-radius: var(--nx-radius) !important;
@@ -932,7 +934,7 @@ body.nexley-admin-theme .tablenav .tablenav-pages .current-page {
   padding: 0 6px !important;
   width: 44px !important;
   text-align: center !important;
-  font-size: 13px !important;
+  font-size: 14px !important;
   font-family: var(--nx-font-mono) !important;
   font-weight: 600 !important;
   border-radius: var(--nx-radius) !important;
@@ -957,7 +959,7 @@ body.nexley-admin-theme .nexley-entry-meta-header {
 body.nexley-admin-theme .nexley-entry-meta-item strong {
   display: block;
   font-family: var(--nx-font-sans);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--nx-text-muted);
   text-transform: uppercase;
@@ -983,7 +985,7 @@ body.nexley-admin-theme .nexley-entry-fields-table {
 body.nexley-admin-theme .nexley-entry-fields-table th {
   background: var(--nx-canvas);
   font-family: var(--nx-font-sans);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -1040,24 +1042,23 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--nx-black);
-  color: var(--nx-green);
-  padding: 4px 10px;
+  background: #24292f;
+  color: #f0f6fc;
+  border: 1px solid #30363d;
+  padding: 5px 12px;
   border-radius: var(--nx-radius);
   font-family: var(--nx-font-sans);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 600;
   margin-bottom: 14px;
 }
 
 .nexley-badge-indicator {
   width: 6px;
   height: 6px;
-  background: var(--nx-green);
+  background: #3fb950;
   border-radius: 50%;
-  box-shadow: 0 0 8px var(--nx-green);
-  animation: nxPulse 2s infinite ease-in-out;
+  box-shadow: 0 0 6px rgba(63, 185, 80, 0.4);
 }
 
 @keyframes nxPulse {
@@ -1098,7 +1099,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   padding: 4px 10px;
   border-radius: var(--nx-radius);
   font-family: var(--nx-font-sans);
-  font-size: 11px;
+  font-size: 14px;
   text-transform: uppercase;
   color: var(--nx-black);
 }
@@ -1131,7 +1132,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   color: var(--nx-black);
   text-decoration: none;
   font-family: var(--nx-font-sans);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
   transition: all 0.15s ease-in-out;
@@ -1145,11 +1146,11 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 .nexley-docs-nav__link:hover {
   background: var(--nx-black);
   border-color: var(--nx-black);
-  color: var(--nx-green);
+  color: #ffffff;
 }
 
 .nexley-docs-nav__link:hover .nexley-nav-num {
-  color: var(--nx-green);
+  color: #94a3b8;
 }
 
 /* Sections */
@@ -1165,12 +1166,12 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 }
 
 .nexley-docs-section__index {
-  background: var(--nx-black);
-  color: var(--nx-green);
-  font-family: var(--nx-font-mono);
+  background: #24292f;
+  color: #ffffff;
+  font-family: var(--nx-font-sans);
   font-size: 14px;
-  font-weight: 700;
-  padding: 6px 10px;
+  font-weight: 600;
+  padding: 6px 12px;
   border-radius: var(--nx-radius);
   line-height: 1;
 }
@@ -1185,7 +1186,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 }
 
 .nexley-docs-section__subtitle {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--nx-text-muted);
   margin: 0;
 }
@@ -1201,7 +1202,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 
 .nexley-card-title {
   font-family: var(--nx-font-sans);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
   color: var(--nx-black);
@@ -1209,7 +1210,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 }
 
 .nexley-card-desc {
-  font-size: 13.5px;
+  font-size: 15px;
   line-height: 1.6;
   color: var(--nx-text-muted);
   margin: 0 0 20px 0;
@@ -1226,7 +1227,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 .nexley-docs-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 14px;
   text-align: left;
 }
 
@@ -1235,7 +1236,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   border-bottom: 1px solid var(--nx-border-hover);
   padding: 12px 16px;
   font-family: var(--nx-font-sans);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
   color: var(--nx-black);
@@ -1258,7 +1259,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   padding: 2px 6px;
   border-radius: var(--nx-radius);
   color: var(--nx-black);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 /* Code Blocks */
@@ -1281,14 +1282,14 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 
 .nexley-code-lang {
   font-family: var(--nx-font-sans);
-  font-size: 10.5px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
   text-transform: uppercase;
-  color: var(--nx-green);
+  color: #e6edf3;
 }
 
 .nexley-code-hint {
-  font-size: 11px;
+  font-size: 14px;
   color: #8b949e;
 }
 
@@ -1298,7 +1299,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   background: var(--nx-black);
   color: #e6edf3;
   font-family: var(--nx-font-mono);
-  font-size: 12.5px;
+  font-size: 14px;
   line-height: 1.6;
   overflow-x: auto;
 }
@@ -1325,7 +1326,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 
 .nexley-info-box__title {
   font-family: var(--nx-font-sans);
-  font-size: 11.5px;
+  font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
   color: var(--nx-black);
@@ -1340,7 +1341,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 
 .nexley-info-list li {
   margin-bottom: 8px;
-  font-size: 12.5px;
+  font-size: 14px;
   line-height: 1.5;
   color: var(--nx-text-muted);
 }
@@ -1364,7 +1365,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 
 .nexley-callout-box__badge {
   font-family: var(--nx-font-sans);
-  font-size: 10.5px;
+  font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
   color: var(--nx-black);
@@ -1372,7 +1373,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 }
 
 .nexley-callout-box__text {
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.6;
   color: var(--nx-text-muted);
   margin: 0;
@@ -1382,11 +1383,237 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
    DRAG-AND-DROP FORM BUILDER (SCOPED ADMIN)
    ========================================================================== */
 
+/* Full-Width Form Builder Screen Layout Overrides */
+body.post-type-nexley_form.post-php #poststuff,
+body.post-type-nexley_form.post-new-php #poststuff {
+  min-width: 0;
+  padding-top: 0;
+}
+
+body.post-type-nexley_form #postbox-container-1 {
+  display: none !important;
+}
+
+body.post-type-nexley_form #postbox-container-2,
+body.post-type-nexley_form #post-body-content {
+  width: 100% !important;
+  float: none !important;
+  margin-right: 0 !important;
+}
+
+body.post-type-nexley_form #post-body.columns-2 {
+  margin-right: 0 !important;
+}
+
+body.post-type-nexley_form #post-body.columns-2 #postbox-container-1 {
+  margin-right: 0 !important;
+  width: 0 !important;
+}
+
+body.post-type-nexley_form #titlediv {
+  display: none !important;
+}
+
+body.post-type-nexley_form #nexley_meta_form_editor {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin-top: 0 !important;
+  overflow: visible !important;
+}
+
+body.post-type-nexley_form #nexley_meta_form_editor > .postbox-header {
+  display: none !important;
+}
+
+body.post-type-nexley_form #nexley_meta_form_editor > .inside {
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: visible !important;
+}
+
+body.post-type-nexley_form .meta-box-sortables,
+body.post-type-nexley_form #postbox-container-2 {
+  overflow: visible !important;
+}
+
 .nexley-builder {
   background: #ffffff;
   border: 1px solid var(--nx-border);
   border-radius: var(--nx-radius);
-  margin-top: 20px;
+  margin-top: 10px;
+}
+
+/* Sticky Header Container (Topbar + Navigation Tabs) */
+.nexley-builder-sticky-header {
+  position: sticky;
+  top: var(--wp-admin--admin-bar--height, 32px);
+  z-index: 99;
+  background: #ffffff;
+  border-top-left-radius: var(--nx-radius);
+  border-top-right-radius: var(--nx-radius);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Top Builder Bar (Title & Actions) */
+.nexley-builder-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border-bottom: 1px solid var(--nx-border);
+  padding: 10px 16px;
+  gap: 16px;
+  box-sizing: border-box;
+  border-top-left-radius: var(--nx-radius);
+  border-top-right-radius: var(--nx-radius);
+}
+
+.nexley-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.nexley-topbar-title-input {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: var(--nx-text-main, #0f172a) !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  padding: 6px 10px !important;
+  border-radius: var(--nx-radius) !important;
+  width: 100% !important;
+  max-width: 320px !important;
+  transition: all 0.15s ease !important;
+  box-sizing: border-box !important;
+}
+
+.nexley-topbar-title-input:hover {
+  border-color: var(--nx-border) !important;
+  background: #f8fafc !important;
+}
+
+.nexley-topbar-title-input:focus {
+  border-color: var(--wp-admin-theme-color, #3858e9) !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 1px var(--wp-admin-theme-color, #3858e9) !important;
+  outline: none !important;
+}
+
+.nexley-topbar-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.nexley-topbar-status--published {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.nexley-topbar-status--draft {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.nexley-topbar-autosave-slot {
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.nexley-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Visible Shortcode Input Group in Top Bar */
+.nexley-topbar-shortcode-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 40px;
+  box-sizing: border-box;
+}
+
+.nexley-topbar-shortcode-input {
+  font-family: var(--nx-font-mono, monospace) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: #334155 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 2px 0 !important;
+  margin: 0 !important;
+  width: 200px;
+  height: 28px !important;
+  cursor: pointer !important;
+  line-height: 1.4 !important;
+}
+
+.nexley-topbar-shortcode-input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.nexley-topbar-shortcode-box .nexley-copy-shortcode-btn {
+  height: 28px !important;
+  min-height: 28px !important;
+  padding: 0 8px !important;
+  font-size: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  border-radius: 4px !important;
+}
+
+.nexley-topbar-trash-link {
+  font-size: 13px;
+  color: var(--nx-text-muted);
+  text-decoration: none;
+  padding: 6px 8px;
+  transition: color 0.15s ease;
+}
+
+.nexley-topbar-trash-link:hover {
+  color: #b91c1c;
+  text-decoration: underline;
+}
+
+@media (max-width: 960px) {
+  .nexley-builder-topbar {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .nexley-topbar-left {
+    flex-basis: 100%;
+  }
+  .nexley-topbar-title-input {
+    max-width: 100% !important;
+  }
+  .nexley-topbar-right {
+    flex-basis: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 782px) {
+  .nexley-builder-sticky-header {
+    top: 46px;
+  }
+  .nexley-builder-topbar {
+    padding: 10px 12px;
+  }
 }
 
 .nexley-builder-header {
@@ -1403,13 +1630,15 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 .nexley-builder-tabs {
   display: flex;
   gap: 4px;
+  flex-wrap: wrap;
+  max-width: 100%;
 }
 
 .nexley-tab-btn {
   background: transparent;
   border: 1px solid transparent;
   padding: 8px 16px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: #475569;
   cursor: pointer;
@@ -1467,7 +1696,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 }
 
 .nexley-palette-group-title {
-  font-size: 11px;
+  font-size: 14px;
   text-transform: uppercase;
   color: #64748b;
   margin: 0 0 8px 0;
@@ -1488,7 +1717,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--nx-text);
   cursor: grab;
   user-select: none;
@@ -1591,7 +1820,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
-  font-size: 12px;
+  font-size: 14px;
   color: #64748b;
 }
 
@@ -1604,7 +1833,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   display: inline-block;
   padding: 2px 8px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
 }
 
@@ -1628,7 +1857,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 
 .nexley-row-grid.is-dragover {
   background: #f8fafc;
-  outline: 2px dashed #0969da;
+  outline: 2px dashed var(--wp-admin-theme-color, #2271b1);
 }
 
 .nexley-canvas-field {
@@ -1640,6 +1869,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   position: relative;
   cursor: pointer;
   transition: border-color 0.15s ease;
+  container-type: inline-size;
 }
 
 .nexley-canvas-field:hover {
@@ -1647,8 +1877,8 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 }
 
 .nexley-canvas-field.is-selected {
-  border-color: #0969da;
-  outline: 2px solid #0969da;
+  border-color: var(--wp-admin-theme-color, #2271b1);
+  outline: 2px solid var(--wp-admin-theme-color, #2271b1);
   outline-offset: 1px;
   box-shadow: none;
 }
@@ -1656,9 +1886,10 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 .nexley-field-bar {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
+  gap: 4px;
+  font-size: 14px;
   margin-bottom: 8px;
+  flex-wrap: wrap;
 }
 
 .nexley-field-handle {
@@ -1671,6 +1902,13 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   cursor: grab;
   color: var(--nx-text-muted);
   transition: color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.nexley-field-handle .nexley-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 .nexley-field-handle:hover {
@@ -1680,20 +1918,34 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 .nexley-field-name {
   font-weight: 600;
   color: #0f172a;
+  font-size: 14px;
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .nexley-field-span-badge {
   background: #f1f5f9;
-  padding: 1px 6px;
-  border-radius: 3px;
-  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
   color: #475569;
+  flex-shrink: 0;
+}
+
+@container (max-width: 250px) {
+  .nexley-field-span-badge {
+    display: none;
+  }
 }
 
 .nexley-field-controls {
   display: flex;
   gap: 2px;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 /* Bare, unboxed icon button with min 28x28px hit area via transparent padding */
@@ -1708,23 +1960,29 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #656d76;
+  color: var(--nexley-icon-muted, #646970);
   border-radius: 4px;
   transition: color 0.15s ease;
 }
 
+.nexley-btn-ctrl .nexley-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
 .nexley-btn-ctrl:hover {
-  color: #1f2328;
+  color: var(--nexley-icon-hover, #1d2327);
   background: transparent;
 }
 
 .nexley-btn-ctrl:focus-visible {
-  outline: 2px solid #0969da;
+  outline: 2px solid var(--nexley-accent, #2271b1);
   outline-offset: 2px;
 }
 
 .nexley-field-del-btn:hover {
-  color: #cf222e;
+  color: var(--nexley-icon-danger, #d63638);
 }
 
 .nexley-field-resize-handle {
@@ -1770,32 +2028,38 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   margin: 0;
   font-size: 14px;
   font-weight: 600;
-  color: #1f2328;
+  color: var(--wp-admin-color-text, #1d2327);
 }
 
 .nexley-drawer-close {
   background: transparent;
   border: 0;
   cursor: pointer;
-  width: 28px;
-  height: 28px;
-  min-width: 28px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
   padding: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #656d76;
+  color: var(--nexley-icon-muted, #646970);
   border-radius: 4px;
   transition: color 0.15s ease;
 }
 
+.nexley-drawer-close .nexley-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
 .nexley-drawer-close:hover {
-  color: #1f2328;
+  color: var(--nexley-icon-hover, #1d2327);
   background: transparent;
 }
 
 .nexley-drawer-close:focus-visible {
-  outline: 2px solid #0969da;
+  outline: 2px solid var(--nexley-accent, #2271b1);
   outline-offset: 2px;
 }
 
@@ -1805,7 +2069,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 
 .nexley-drawer-group label {
   display: block;
-  font-size: 12px;
+  font-size: 14px;
   margin-bottom: 4px;
 }
 
@@ -1870,7 +2134,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 }
 
 .nexley-style-card-body p {
-  font-size: 12px;
+  font-size: 14px;
   color: #64748b;
   margin: 0;
 }
@@ -1889,9 +2153,9 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 }
 
 .nexley-device-switcher .button.is-active {
-  background: #1f2328;
+  background: var(--wp-admin-color-text, #1d2327);
   color: #ffffff;
-  border-color: #1f2328;
+  border-color: var(--wp-admin-color-text, #1d2327);
 }
 
 .nexley-preview-viewport {
@@ -1913,7 +2177,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   display: inline-flex;
   align-items: center;
   padding: 3px 8px;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
   line-height: 1;
   border-radius: 9999px;
@@ -1970,7 +2234,7 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
 
 .nexley-detail-value {
   vertical-align: top;
-  font-size: 13.5px;
+  font-size: 15px;
   line-height: 1.6;
 }
 
@@ -1984,5 +2248,157 @@ body.nexley-admin-theme .nexley-entry-fields-table th {
   align-items: center;
   gap: 4px;
 }
+
+/* ==========================================================================
+   IMPORT & EXPORT SCREEN REDESIGN
+   ========================================================================== */
+
+.nexley-import-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--nx-border);
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+
+.nexley-import-tab-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--nx-text-muted);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.nexley-import-tab-link:hover {
+  color: var(--nx-text-main);
+  background: #f8fafc;
+}
+
+.nexley-import-tab-link:focus-visible {
+  outline: 2px solid var(--wp-admin-theme-color, #3858e9);
+  outline-offset: -2px;
+}
+
+.nexley-import-tab-link.is-active {
+  color: var(--nx-text-main);
+  font-weight: 600;
+  border-bottom-color: var(--wp-admin-theme-color, #3858e9);
+}
+
+.nexley-dropzone {
+  border: 1px dashed var(--nx-border);
+  border-radius: 6px;
+  padding: 32px 24px;
+  text-align: center;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  margin-bottom: 4px;
+  position: relative;
+}
+
+.nexley-dropzone:hover {
+  border-color: var(--wp-admin-theme-color, #3858e9);
+  background: #ffffff;
+}
+
+.nexley-dropzone.is-dragover {
+  border-color: var(--wp-admin-theme-color, #3858e9);
+  background: #eff6ff;
+}
+
+.nexley-dropzone:focus-visible {
+  outline: 2px solid var(--wp-admin-theme-color, #3858e9);
+  outline-offset: 2px;
+}
+
+.nexley-dropzone-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--nx-text-muted);
+  margin-bottom: 10px;
+}
+
+.nexley-dropzone:hover .nexley-dropzone-icon,
+.nexley-dropzone.is-dragover .nexley-dropzone-icon {
+  color: var(--wp-admin-theme-color, #3858e9);
+}
+
+.nexley-dropzone-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--nx-text-main);
+  margin: 0 0 4px 0;
+}
+
+.nexley-dropzone-subtext {
+  font-size: 12.5px;
+  color: var(--nx-text-muted);
+  margin: 0;
+}
+
+.nexley-dropzone-selected-file {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: #ffffff;
+  border: 1px solid var(--nx-border);
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--nx-text-main);
+}
+
+.nexley-dropzone-selected-file .nexley-filename {
+  font-weight: 600;
+}
+
+.nexley-dropzone-selected-file .nexley-filesize {
+  color: var(--nx-text-muted);
+  font-size: 12px;
+}
+
+.nexley-dropzone.has-file .nexley-dropzone-prompt {
+  display: none;
+}
+
+.nexley-dropzone.has-file .nexley-dropzone-selected-file {
+  display: inline-flex;
+}
+
+.nexley-dropzone-remove-file {
+  background: transparent;
+  border: none;
+  color: var(--nx-text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  text-decoration: underline;
+  padding: 0 0 0 6px;
+}
+
+.nexley-dropzone-remove-file:hover {
+  color: #b91c1c;
+}
+
+.nexley-report-table th,
+.nexley-report-table td {
+  padding: 10px 12px !important;
+}
+
+.nexley-detected-forms-table th,
+.nexley-detected-forms-table td {
+  padding: 10px 12px !important;
+  vertical-align: middle;
+}
+
 
 

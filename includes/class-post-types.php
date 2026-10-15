@@ -75,7 +75,7 @@ final class Post_Types {
             'has_archive'        => false,
             'hierarchical'       => false,
             'menu_position'      => 30,
-            'menu_icon'          => 'dashicons-feedback',
+            'menu_icon'          => 'none',
             'supports'           => ['title'],
             'show_in_rest'       => false,
         ];

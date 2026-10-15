@@ -78,6 +78,86 @@ final class Importer_Exporter {
     }
 
     /**
+     * Provider labels map for standardized imported form titles.
+     */
+    public const PROVIDER_LABELS = [
+        'ninja-forms'    => 'Ninja Forms',
+        'gravity-forms'  => 'Gravity Forms',
+        'cf7'            => 'Contact Form 7',
+        'contact-form-7' => 'Contact Form 7',
+        'native'         => '',
+        'nex'            => '',
+    ];
+
+    /**
+     * Generate a unique, sanitized, standardized imported form title.
+     *
+     * Rules:
+     * - Third-party format: "<Original name> (<Provider>)"
+     * - Empty original name fallback: "Untitled form (<Provider>)"
+     * - Native (.nex): "<Original name>" without provider suffix (fallback: "Untitled form").
+     * - Truncates original name if needed, never clips the provider suffix.
+     * - Collision numbering: appends " 2", " 3", etc. if a form with the title exists in publish, draft, or trash.
+     *
+     * @param string $original_title Raw original title.
+     * @param string $provider_id    Importer provider ID (e.g. 'ninja-forms', 'gravity-forms', 'cf7', 'native').
+     * @return string Unique final form title.
+     */
+    public static function generate_import_title(string $original_title, string $provider_id): string {
+        global $wpdb;
+
+        $provider_key   = strtolower(trim($provider_id));
+        $provider_label = self::PROVIDER_LABELS[$provider_key] ?? '';
+
+        $clean_original = trim(sanitize_text_field($original_title));
+        if ($clean_original === '') {
+            $base_name = 'Untitled form';
+        } else {
+            $base_name = $clean_original;
+        }
+
+        $suffix = !empty($provider_label) ? " ({$provider_label})" : '';
+
+        // Max safe length for base + suffix before collision numbering (WP post_title varchar 200)
+        $max_total_len = 190;
+        $suffix_len    = mb_strlen($suffix, 'UTF-8');
+        $max_base_len  = $max_total_len - $suffix_len;
+
+        if (mb_strlen($base_name, 'UTF-8') > $max_base_len) {
+            $base_name = mb_substr($base_name, 0, $max_base_len, 'UTF-8');
+        }
+
+        $base_candidate = $base_name . $suffix;
+
+        // Check if $base_candidate exists in database across any status (publish, draft, trash, etc.)
+        $exists = $wpdb->get_var($wpdb->prepare(
+            "SELECT ID FROM {$wpdb->posts} WHERE post_type = %s AND post_title = %s LIMIT 1",
+            Post_Types::CPT_FORM,
+            $base_candidate
+        ));
+
+        if (!$exists) {
+            return $base_candidate;
+        }
+
+        // Collision detected: find the next available counter ( 2, 3, etc.)
+        $counter = 2;
+        while (true) {
+            $numbered_candidate = "{$base_candidate} {$counter}";
+            $exists_num = $wpdb->get_var($wpdb->prepare(
+                "SELECT ID FROM {$wpdb->posts} WHERE post_type = %s AND post_title = %s LIMIT 1",
+                Post_Types::CPT_FORM,
+                $numbered_candidate
+            ));
+
+            if (!$exists_num) {
+                return $numbered_candidate;
+            }
+            $counter++;
+        }
+    }
+
+    /**
      * Import a form from a Native .nex JSON Envelope.
      *
      * @param string $json_str
@@ -98,11 +178,12 @@ final class Importer_Exporter {
             return 0;
         }
 
-        $title = !empty($form_data['title']) ? sanitize_text_field((string) $form_data['title']) : 'Imported Nexley Form';
+        $raw_title   = !empty($form_data['title']) ? (string) $form_data['title'] : '';
+        $final_title = self::generate_import_title($raw_title, 'native');
 
         $post_id = wp_insert_post([
             'post_type'   => Post_Types::CPT_FORM,
-            'post_title'  => $title,
+            'post_title'  => $final_title,
             'post_status' => 'publish',
         ]);
 
@@ -110,8 +191,12 @@ final class Importer_Exporter {
             return 0;
         }
 
-        $form_data['id'] = $post_id;
+        $form_data['id']    = $post_id;
+        $form_data['title'] = $final_title;
         Form_Schema::save_form_schema($post_id, $form_data);
+
+        update_post_meta($post_id, '_nexley_import_source', 'native');
+        update_post_meta($post_id, '_nexley_import_source_name', $raw_title);
 
         return $post_id;
     }
@@ -129,7 +214,13 @@ final class Importer_Exporter {
             return ['error' => 'Importer not found.'];
         }
 
-        return $importer->convert($source);
+        $schema = $importer->convert($source);
+        if (!empty($schema)) {
+            $raw_title = !empty($schema['title']) ? (string) $schema['title'] : '';
+            $schema['title'] = self::generate_import_title($raw_title, $importer_id);
+        }
+
+        return $schema;
     }
 
     /**
@@ -150,11 +241,12 @@ final class Importer_Exporter {
             return 0;
         }
 
-        $title = !empty($schema['title']) ? sanitize_text_field((string) $schema['title']) : 'Imported Form';
+        $raw_title   = !empty($schema['title']) ? (string) $schema['title'] : '';
+        $final_title = self::generate_import_title($raw_title, $importer_id);
 
         $post_id = wp_insert_post([
             'post_type'   => Post_Types::CPT_FORM,
-            'post_title'  => $title,
+            'post_title'  => $final_title,
             'post_status' => 'publish',
         ]);
 
@@ -162,8 +254,12 @@ final class Importer_Exporter {
             return 0;
         }
 
-        $schema['id'] = $post_id;
+        $schema['id']    = $post_id;
+        $schema['title'] = $final_title;
         Form_Schema::save_form_schema($post_id, $schema);
+
+        update_post_meta($post_id, '_nexley_import_source', $importer_id);
+        update_post_meta($post_id, '_nexley_import_source_name', $raw_title);
 
         return $post_id;
     }

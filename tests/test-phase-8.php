@@ -97,7 +97,7 @@ class Phase8_Test {
         $import_successful = (
             $imported_form_id > 0 &&
             $imported_form_id !== $orig_form_id &&
-            $imported_schema['title'] === 'Native Nex Test Form' &&
+            strpos($imported_schema['title'], 'Native Nex Test Form') === 0 &&
             count($imported_schema['fields']) === 2 &&
             $imported_schema['settings']['preset'] === 'outlined'
         );

@@ -129,6 +129,10 @@ final class Plugin {
      * @param string $hook_suffix
      */
     public function enqueue_admin_assets(string $hook_suffix): void {
+        // Enqueue the admin menu icon mask on all admin screens so it is always styled in the WP sidebar
+        $menu_icon_css = "#adminmenu #menu-posts-nexley_form .wp-menu-image { background-color: currentColor; -webkit-mask-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='7' height='9' x='3' y='3' rx='1'/%3E%3Crect width='7' height='5' x='14' y='3' rx='1'/%3E%3Crect width='7' height='9' x='14' y='12' rx='1'/%3E%3Crect width='7' height='5' x='3' y='16' rx='1'/%3E%3C/svg%3E\"); mask-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='7' height='9' x='3' y='3' rx='1'/%3E%3Crect width='7' height='5' x='14' y='3' rx='1'/%3E%3Crect width='7' height='9' x='14' y='12' rx='1'/%3E%3Crect width='7' height='5' x='3' y='16' rx='1'/%3E%3C/svg%3E\"); -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; -webkit-mask-size: 20px 20px; mask-size: 20px 20px; } #adminmenu #menu-posts-nexley_form .wp-menu-image:before { display: none !important; content: '' !important; }";
+        wp_add_inline_style('common', $menu_icon_css);
+
         if (!self::is_nexley_screen()) {
             return;
         }

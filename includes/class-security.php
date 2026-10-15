@@ -212,6 +212,7 @@ final class Security {
 
         if (is_dir($sibling_dir) && wp_is_writable($sibling_dir)) {
             delete_option('nexley_forms_upload_fallback_notice');
+            self::ensure_directory_barriers($sibling_dir);
             return $sibling_dir;
         }
 
@@ -224,9 +225,18 @@ final class Security {
         }
 
         update_option('nexley_forms_upload_fallback_notice', 1);
+        self::ensure_directory_barriers($target_dir);
 
-        // .htaccess execution denial for Apache environments
-        $htaccess_file = $target_dir . '/.htaccess';
+        return $target_dir;
+    }
+
+    /**
+     * Ensure execution barriers (.htaccess + index.php) exist in a directory.
+     *
+     * @param string $dir
+     */
+    private static function ensure_directory_barriers(string $dir): void {
+        $htaccess_file = $dir . '/.htaccess';
         if (!file_exists($htaccess_file)) {
             $htaccess_rules = "# Deny direct access and execution of scripts\n"
                 . "<IfModule mod_authz_core.c>\n"
@@ -239,16 +249,13 @@ final class Security {
                 . "Deny from all\n"
                 . "</FilesMatch>\n"
                 . "Options -Indexes\n";
-            file_put_contents($htaccess_file, $htaccess_rules);
+            @file_put_contents($htaccess_file, $htaccess_rules);
         }
 
-        // Empty index.php barrier to prevent directory listing
-        $index_file = $target_dir . '/index.php';
+        $index_file = $dir . '/index.php';
         if (!file_exists($index_file)) {
-            file_put_contents($index_file, "<?php\n// Silence is golden.\nexit;\n");
+            @file_put_contents($index_file, "<?php\n// Silence is golden.\nexit;\n");
         }
-
-        return $target_dir;
     }
 
     /**

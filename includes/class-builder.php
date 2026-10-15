@@ -59,53 +59,108 @@ final class Builder {
         }
 
         wp_nonce_field(self::NONCE_ACTION, self::NONCE_NAME);
-        $shortcode = sprintf('[nexley_form id="%d"]', $form_id);
+        $shortcode     = sprintf('[nexley_form id="%d"]', $form_id);
+        $post_status   = $post->post_status;
+        $is_published  = ($post_status === 'publish');
+        $status_label  = $is_published ? __('Published', 'nexley-forms') : __('Draft', 'nexley-forms');
+        $delete_link   = get_delete_post_link($post->ID);
+        $clean_title   = $post->post_title;
         ?>
-        <div id="nexley-builder-root" class="nexley-builder" data-form-id="<?php echo esc_attr((string) $form_id); ?>" data-autosave-nonce="<?php echo esc_attr(wp_create_nonce('nexley_builder_autosave')); ?>" data-ajax-url="<?php echo esc_url(admin_url('admin-ajax.php')); ?>">
+        <div id="nexley-builder-root" class="nexley-builder" data-form-id="<?php echo esc_attr((string) $form_id); ?>" data-autosave-nonce="<?php echo esc_attr(wp_create_nonce('nexley_builder_autosave')); ?>" data-ajax-url="<?php echo esc_url(admin_url('admin-ajax.php')); ?>" data-is-published="<?php echo $is_published ? '1' : '0'; ?>">
             <!-- Hidden JSON input holding single source of truth schema -->
             <input type="hidden" name="nexley_form_schema_json" id="nexley_form_schema_json" value="<?php echo esc_attr(wp_json_encode($schema)); ?>" />
 
-            <!-- Top Builder Navigation Bar -->
-            <div class="nexley-builder-header">
-                <div class="nexley-builder-tabs" role="tablist">
-                    <button type="button" class="nexley-tab-btn is-active" data-tab="build" role="tab" aria-selected="true">
-                        <?php \Nexley_Forms\Icons::render('build', 16); ?> <span><?php esc_html_e('Build', 'nexley-forms'); ?></span>
-                    </button>
-                    <button type="button" class="nexley-tab-btn" data-tab="actions" role="tab" aria-selected="false">
-                        <?php \Nexley_Forms\Icons::render('actions', 16); ?> <span><?php esc_html_e('Emails & Actions', 'nexley-forms'); ?></span>
-                    </button>
-                    <button type="button" class="nexley-tab-btn" data-tab="settings" role="tab" aria-selected="false">
-                        <?php \Nexley_Forms\Icons::render('settings', 16); ?> <span><?php esc_html_e('Settings', 'nexley-forms'); ?></span>
-                    </button>
-                    <button type="button" class="nexley-tab-btn" data-tab="preview" role="tab" aria-selected="false">
-                        <?php \Nexley_Forms\Icons::render('preview', 16); ?> <span><?php esc_html_e('Preview', 'nexley-forms'); ?></span>
-                    </button>
+            <!-- Hidden Core WordPress Post Fields for Native Save / Publish / Transition Flow -->
+            <input type="hidden" name="post_status" id="post_status" value="<?php echo esc_attr($is_published ? 'publish' : 'draft'); ?>" />
+            <input type="hidden" name="hidden_post_status" id="hidden_post_status" value="<?php echo esc_attr($post_status === 'auto-draft' ? 'draft' : $post_status); ?>" />
+            <input type="hidden" name="original_post_status" id="original_post_status" value="<?php echo esc_attr($post_status === 'auto-draft' ? 'draft' : $post_status); ?>" />
+            <input type="hidden" name="original_publish" id="original_publish" value="<?php echo esc_attr($is_published ? __('Update', 'nexley-forms') : __('Publish', 'nexley-forms')); ?>" />
+            <input type="hidden" name="visibility" id="visibility" value="public" />
+
+            <!-- Sticky Builder Header Container -->
+            <div class="nexley-builder-sticky-header">
+                <!-- Top Builder Bar -->
+                <div class="nexley-builder-topbar">
+                    <div class="nexley-topbar-left">
+                        <input type="text" name="post_title" id="nexley-topbar-title" class="nexley-topbar-title-input" value="<?php echo esc_attr($clean_title); ?>" placeholder="<?php esc_attr_e('Add form title', 'nexley-forms'); ?>" aria-label="<?php esc_attr_e('Form Title', 'nexley-forms'); ?>" />
+                        <span class="nexley-topbar-status nexley-topbar-status--<?php echo $is_published ? 'published' : 'draft'; ?>" id="nexley-topbar-status-badge">
+                            <?php echo esc_html($status_label); ?>
+                        </span>
+                        <div class="nexley-topbar-autosave-slot" id="nexley-topbar-autosave-slot">
+                            <span id="nexley-autosave-indicator" class="nexley-autosave-indicator" style="display:none;align-items:center;gap:6px;">
+                                <?php \Nexley_Forms\Icons::render('check', 16, 'nexley-icon-autosave'); ?>
+                                <span class="nexley-autosave-text"><?php esc_html_e('Draft autosaved', 'nexley-forms'); ?></span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="nexley-topbar-right">
+                        <div class="nexley-topbar-shortcode-box" title="<?php esc_attr_e('Form Shortcode (click to copy)', 'nexley-forms'); ?>">
+                            <input type="text" readonly value="<?php echo esc_attr($shortcode); ?>" class="nexley-topbar-shortcode-input" id="nexley-topbar-shortcode" onclick="this.select();" />
+                            <button type="button" class="button button-secondary button-small nexley-copy-shortcode-btn" data-shortcode="<?php echo esc_attr($shortcode); ?>" title="<?php esc_attr_e('Copy shortcode to clipboard', 'nexley-forms'); ?>">
+                                <?php \Nexley_Forms\Icons::render('copy', 16); ?>
+                                <span><?php esc_html_e('Copy', 'nexley-forms'); ?></span>
+                            </button>
+                        </div>
+
+                        <button type="button" class="button button-secondary nexley-topbar-preview-btn">
+                            <?php \Nexley_Forms\Icons::render('preview', 16); ?>
+                            <span><?php esc_html_e('Preview', 'nexley-forms'); ?></span>
+                        </button>
+
+                        <?php if ($is_published) : ?>
+                            <button type="submit" name="saveasdraft" id="nexley-btn-unpublish" class="button button-secondary" value="<?php esc_attr_e('Save Draft', 'nexley-forms'); ?>">
+                                <span><?php esc_html_e('Switch to Draft', 'nexley-forms'); ?></span>
+                            </button>
+                            <button type="submit" name="save" id="publish" class="button button-primary nexley-save-builder-btn nexley-topbar-save-btn" value="<?php esc_attr_e('Update', 'nexley-forms'); ?>">
+                                <?php \Nexley_Forms\Icons::render('check', 16); ?>
+                                <span><?php esc_html_e('Update', 'nexley-forms'); ?></span>
+                            </button>
+                        <?php else : ?>
+                            <button type="submit" name="save" id="save-post" class="button button-secondary nexley-topbar-draft-btn" value="<?php esc_attr_e('Save Draft', 'nexley-forms'); ?>">
+                                <span><?php esc_html_e('Save Draft', 'nexley-forms'); ?></span>
+                            </button>
+                            <button type="submit" name="publish" id="publish" class="button button-primary nexley-save-builder-btn nexley-topbar-publish-btn" value="<?php esc_attr_e('Publish', 'nexley-forms'); ?>">
+                                <?php \Nexley_Forms\Icons::render('check', 16); ?>
+                                <span><?php esc_html_e('Publish', 'nexley-forms'); ?></span>
+                            </button>
+                        <?php endif; ?>
+
+                        <?php if (!empty($delete_link) && $post->post_status !== 'auto-draft' && current_user_can('delete_post', $post->ID)) : ?>
+                            <a href="<?php echo esc_url($delete_link); ?>" class="nexley-topbar-trash-link" onclick="return confirm('<?php echo esc_js(__('Are you sure you want to move this form to the trash?', 'nexley-forms')); ?>');">
+                                <?php esc_html_e('Move to Trash', 'nexley-forms'); ?>
+                            </a>
+                        <?php endif; ?>
+                    </div>
                 </div>
 
-                <div class="nexley-builder-actions">
-                    <div class="nexley-history-controls" role="group" aria-label="<?php esc_attr_e('History', 'nexley-forms'); ?>">
-                        <button type="button" class="button button-secondary button-small nexley-undo-btn" title="<?php esc_attr_e('Undo (Ctrl+Z)', 'nexley-forms'); ?>" aria-label="<?php esc_attr_e('Undo', 'nexley-forms'); ?>" disabled>
-                            <?php \Nexley_Forms\Icons::render('undo', 16); ?>
+                <!-- Builder Navigation Sub-Bar (Tabs & History) -->
+                <div class="nexley-builder-header">
+                    <div class="nexley-builder-tabs" role="tablist">
+                        <button type="button" class="nexley-tab-btn is-active" data-tab="build" role="tab" aria-selected="true">
+                            <?php \Nexley_Forms\Icons::render('build', 16); ?> <span><?php esc_html_e('Build', 'nexley-forms'); ?></span>
                         </button>
-                        <button type="button" class="button button-secondary button-small nexley-redo-btn" title="<?php esc_attr_e('Redo (Ctrl+Y)', 'nexley-forms'); ?>" aria-label="<?php esc_attr_e('Redo', 'nexley-forms'); ?>" disabled>
-                            <?php \Nexley_Forms\Icons::render('redo', 16); ?>
+                        <button type="button" class="nexley-tab-btn" data-tab="actions" role="tab" aria-selected="false">
+                            <?php \Nexley_Forms\Icons::render('actions', 16); ?> <span><?php esc_html_e('Emails & Actions', 'nexley-forms'); ?></span>
+                        </button>
+                        <button type="button" class="nexley-tab-btn" data-tab="settings" role="tab" aria-selected="false">
+                            <?php \Nexley_Forms\Icons::render('settings', 16); ?> <span><?php esc_html_e('Settings', 'nexley-forms'); ?></span>
+                        </button>
+                        <button type="button" class="nexley-tab-btn" data-tab="preview" role="tab" aria-selected="false">
+                            <?php \Nexley_Forms\Icons::render('preview', 16); ?> <span><?php esc_html_e('Preview', 'nexley-forms'); ?></span>
                         </button>
                     </div>
 
-                    <span id="nexley-autosave-indicator" style="font-size:11px;color:#64748b;margin-left:8px;margin-right:auto;display:none;align-items:center;gap:4px;">
-                        <?php \Nexley_Forms\Icons::render('check', 14, 'nexley-icon-autosave'); ?>
-                        <span class="nexley-autosave-text"><?php esc_html_e('Draft autosaved', 'nexley-forms'); ?></span>
-                    </span>
-
-                    <button type="button" class="button button-secondary nexley-copy-shortcode-btn" data-shortcode="<?php echo esc_attr($shortcode); ?>" title="<?php esc_attr_e('Copy shortcode to clipboard', 'nexley-forms'); ?>">
-                        <?php \Nexley_Forms\Icons::render('copy', 14); ?>
-                        <span><?php esc_html_e('Copy Shortcode', 'nexley-forms'); ?></span>
-                    </button>
-
-                    <button type="button" class="button button-primary nexley-save-builder-btn">
-                        <?php \Nexley_Forms\Icons::render('check', 14); ?>
-                        <span><?php esc_html_e('Save Form', 'nexley-forms'); ?></span>
-                    </button>
+                    <div class="nexley-builder-actions">
+                        <div class="nexley-history-controls" role="group" aria-label="<?php esc_attr_e('History', 'nexley-forms'); ?>">
+                            <button type="button" class="button button-secondary button-small nexley-undo-btn" title="<?php esc_attr_e('Undo (Ctrl+Z)', 'nexley-forms'); ?>" aria-label="<?php esc_attr_e('Undo', 'nexley-forms'); ?>" disabled>
+                                <?php \Nexley_Forms\Icons::render('undo', 24); ?>
+                            </button>
+                            <button type="button" class="button button-secondary button-small nexley-redo-btn" title="<?php esc_attr_e('Redo (Ctrl+Y)', 'nexley-forms'); ?>" aria-label="<?php esc_attr_e('Redo', 'nexley-forms'); ?>" disabled>
+                                <?php \Nexley_Forms\Icons::render('redo', 24); ?>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -133,7 +188,7 @@ final class Builder {
                                                  title="<?php echo esc_attr($def['description'] ?? ''); ?>">
                                                 <span class="nexley-palette-icon"><?php \Nexley_Forms\Icons::render($def['icon'] ?? 'text', 16); ?></span>
                                                 <span class="nexley-palette-item-title"><?php echo esc_html($def['title']); ?></span>
-                                                <button type="button" class="nexley-add-field-btn" aria-label="<?php echo esc_attr(sprintf(__('Add %s to canvas', 'nexley-forms'), $def['title'])); ?>" title="<?php esc_attr_e('Click to add to canvas', 'nexley-forms'); ?>"><?php \Nexley_Forms\Icons::render('plus', 12); ?></button>
+                                                <button type="button" class="nexley-add-field-btn" aria-label="<?php echo esc_attr(sprintf(__('Add %s to canvas', 'nexley-forms'), $def['title'])); ?>" title="<?php esc_attr_e('Click to add to canvas', 'nexley-forms'); ?>"><?php \Nexley_Forms\Icons::render('plus', 16); ?></button>
                                             </div>
                                         <?php endforeach; ?>
                                     </div>
@@ -158,7 +213,7 @@ final class Builder {
 
                         <div class="nexley-canvas-footer">
                             <button type="button" class="button button-dashed button-large" id="nexley-add-row-btn">
-                                + <?php esc_html_e('Add Row', 'nexley-forms'); ?>
+                                <?php \Nexley_Forms\Icons::render('plus', 16); ?> <span><?php esc_html_e('Add Row', 'nexley-forms'); ?></span>
                             </button>
                         </div>
                     </main>
@@ -168,7 +223,7 @@ final class Builder {
                         <div class="nexley-drawer-header">
                             <h3 id="nexley-drawer-title"><?php esc_html_e('Field Settings', 'nexley-forms'); ?></h3>
                             <button type="button" class="nexley-drawer-close" aria-label="<?php esc_attr_e('Close panel', 'nexley-forms'); ?>" title="<?php esc_attr_e('Close panel', 'nexley-forms'); ?>">
-                                <?php \Nexley_Forms\Icons::render('close', 16); ?>
+                                <?php \Nexley_Forms\Icons::render('close', 24); ?>
                             </button>
                         </div>
                         <div class="nexley-drawer-body" id="nexley-drawer-fields">
@@ -184,7 +239,7 @@ final class Builder {
                     <div class="nexley-actions-header">
                         <h2><?php esc_html_e('Notification Emails & Post-Submit Actions', 'nexley-forms'); ?></h2>
                         <button type="button" class="button button-primary" id="nexley-add-notif-btn">
-                            + <?php esc_html_e('Add Notification Email', 'nexley-forms'); ?>
+                            <?php \Nexley_Forms\Icons::render('plus', 16); ?> <span><?php esc_html_e('Add Notification Email', 'nexley-forms'); ?></span>
                         </button>
                     </div>
 
@@ -335,13 +390,13 @@ final class Builder {
                     <div class="nexley-preview-toolbar">
                         <div class="nexley-device-switcher" role="group" aria-label="<?php esc_attr_e('Device Viewport', 'nexley-forms'); ?>">
                             <button type="button" class="button is-active" data-device="desktop">
-                                <?php \Nexley_Forms\Icons::render('desktop', 14); ?> <span><?php esc_html_e('Desktop', 'nexley-forms'); ?></span>
+                                <?php \Nexley_Forms\Icons::render('desktop', 16); ?> <span><?php esc_html_e('Desktop', 'nexley-forms'); ?></span>
                             </button>
                             <button type="button" class="button" data-device="tablet">
-                                <?php \Nexley_Forms\Icons::render('tablet', 14); ?> <span><?php esc_html_e('Tablet (768px)', 'nexley-forms'); ?></span>
+                                <?php \Nexley_Forms\Icons::render('tablet', 16); ?> <span><?php esc_html_e('Tablet (768px)', 'nexley-forms'); ?></span>
                             </button>
                             <button type="button" class="button" data-device="mobile">
-                                <?php \Nexley_Forms\Icons::render('mobile', 14); ?> <span><?php esc_html_e('Mobile (375px)', 'nexley-forms'); ?></span>
+                                <?php \Nexley_Forms\Icons::render('mobile', 16); ?> <span><?php esc_html_e('Mobile (375px)', 'nexley-forms'); ?></span>
                             </button>
                         </div>
                     </div>

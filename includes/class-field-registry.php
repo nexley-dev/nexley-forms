@@ -250,7 +250,7 @@ final class Field_Registry {
         self::register_type('consent', [
             'title'             => __('Consent / Terms Checkbox', 'nexley-forms'),
             'category'          => 'core',
-            'icon'              => 'check',
+            'icon'              => 'consent',
             'description'       => __('GDPR agreement or terms acceptance checkbox.', 'nexley-forms'),
             'defaults'          => [
                 'label'      => __('I agree to the Terms of Service and Privacy Policy.', 'nexley-forms'),
@@ -511,7 +511,7 @@ final class Field_Registry {
         self::register_type('repeater', [
             'title'             => __('Repeater Field', 'nexley-forms'),
             'category'          => 'advanced',
-            'icon'              => 'duplicate',
+            'icon'              => 'repeater',
             'description'       => __('Repeatable sub-fields rows (e.g. guest list, items).', 'nexley-forms'),
             'defaults'          => [
                 'label'      => __('Repeatable Items', 'nexley-forms'),

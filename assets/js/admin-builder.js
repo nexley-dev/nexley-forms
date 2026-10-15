@@ -138,6 +138,12 @@
   }
 
   function syncSchemaInput() {
+    const tTitle = document.getElementById('nexley-topbar-title');
+    const wTitle = document.getElementById('title');
+    const currentTitle = (tTitle && tTitle.value.trim()) || (wTitle && wTitle.value.trim()) || '';
+    if (currentTitle && schema) {
+      schema.title = currentTitle;
+    }
     schemaInput.value = JSON.stringify(schema);
   }
 
@@ -248,7 +254,7 @@
         ${statusBadge}
         <div class="nexley-row-actions">
           <button type="button" class="button button-small nexley-del-row-btn" title="Delete Row" aria-label="Delete Row ${rowIdx + 1}">
-            <svg class="nexley-icon" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><use href="#nexley-icon-trash"></use></svg>
+            <svg class="nexley-icon" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#nexley-icon-trash"></use></svg>
           </button>
         </div>
       `;
@@ -289,19 +295,19 @@
           fieldEl.innerHTML = `
             <div class="nexley-field-bar">
               <span class="nexley-field-handle" title="Drag to reorder" aria-label="Drag to reorder" tabindex="0" role="button">
-                <svg class="nexley-icon" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><use href="#nexley-icon-drag"></use></svg>
+                <svg class="nexley-icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#nexley-icon-drag"></use></svg>
               </span>
               <span class="nexley-field-name">${escapeHtml(field.label || field.name)} ${reqMark}</span>
               <span class="nexley-field-span-badge">${spanLabel}</span>
               <div class="nexley-field-controls">
                 <button type="button" class="nexley-btn-ctrl nexley-field-edit-btn" title="Settings" aria-label="Field Settings">
-                  <svg class="nexley-icon" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><use href="#nexley-icon-settings"></use></svg>
+                  <svg class="nexley-icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#nexley-icon-settings"></use></svg>
                 </button>
                 <button type="button" class="nexley-btn-ctrl nexley-field-dup-btn" title="Duplicate" aria-label="Duplicate Field">
-                  <svg class="nexley-icon" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><use href="#nexley-icon-duplicate"></use></svg>
+                  <svg class="nexley-icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#nexley-icon-duplicate"></use></svg>
                 </button>
                 <button type="button" class="nexley-btn-ctrl nexley-field-del-btn" title="Delete" aria-label="Delete Field">
-                  <svg class="nexley-icon" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><use href="#nexley-icon-trash"></use></svg>
+                  <svg class="nexley-icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#nexley-icon-trash"></use></svg>
                 </button>
               </div>
             </div>
@@ -748,12 +754,12 @@
                 <input type="text" class="widefat nexley-opt-val" value="${escapeHtml(opt.value)}" placeholder="Value" />
                 <input type="text" class="widefat nexley-opt-lbl" value="${escapeHtml(opt.label)}" placeholder="Label" />
                 <button type="button" class="button button-small nexley-btn-ctrl nexley-opt-del" data-idx="${i}" title="Delete Option" aria-label="Delete Option">
-                  <svg class="nexley-icon" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><use href="#nexley-icon-trash"></use></svg>
+                  <svg class="nexley-icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#nexley-icon-trash"></use></svg>
                 </button>
               </div>
             `).join('')}
           </div>
-          <button type="button" class="button button-small" id="nexley_dr_add_opt">+ Add Option</button>
+          <button type="button" class="button button-small" id="nexley_dr_add_opt"><svg class="nexley-icon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#nexley-icon-plus"></use></svg> <span>Add Option</span></button>
         </div>
       `;
     }
@@ -795,12 +801,12 @@
               </select>
               <input type="text" class="regular-text nexley-rule-val" value="${escapeHtml(r.value)}" placeholder="Value" />
               <button type="button" class="button button-small nexley-btn-ctrl nexley-rule-del" data-idx="${i}" title="Delete Rule" aria-label="Delete Rule">
-                <svg class="nexley-icon" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><use href="#nexley-icon-trash"></use></svg>
+                <svg class="nexley-icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#nexley-icon-trash"></use></svg>
               </button>
             </div>
           `).join('')}
         </div>
-        <button type="button" class="button button-small" id="nexley_dr_add_rule">+ Add Rule</button>
+        <button type="button" class="button button-small" id="nexley_dr_add_rule"><svg class="nexley-icon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#nexley-icon-plus"></use></svg> <span>Add Rule</span></button>
       </div>
     `;
 
@@ -1033,7 +1039,7 @@
         <div class="nexley-action-card-header">
           <strong>${escapeHtml(n.name || 'Notification ' + (idx + 1))}</strong>
           <button type="button" class="button button-small nexley-del-notif-btn" data-idx="${idx}" title="Delete Notification" aria-label="Delete Notification">
-            <svg class="nexley-icon" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><use href="#nexley-icon-trash"></use></svg>
+            <svg class="nexley-icon" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#nexley-icon-trash"></use></svg>
           </button>
         </div>
         <table class="form-table">
@@ -1223,20 +1229,98 @@
       }
     });
   });
-
   /* --------------------------------------------------------------------------
-   * 12. Save Button, Autosave & Copy Shortcode
+   * 12. Top Bar Controls, Save Flow & Unload Handling
    * -------------------------------------------------------------------------- */
-  const saveBtn = root.querySelector('.nexley-save-builder-btn');
-  if (saveBtn) {
-    saveBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      syncSchemaInput();
-      const form = root.closest('form');
-      if (form) {
-        isDirty = false;
-        form.submit();
+  const postForm = root.closest('form') || document.getElementById('post');
+  const topbarTitle = document.getElementById('nexley-topbar-title');
+  const wpTitle = document.getElementById('title');
+
+  // Bidirectional title sync
+  if (topbarTitle) {
+    if (wpTitle) {
+      wpTitle.removeAttribute('name');
+      if (!topbarTitle.value && wpTitle.value) {
+        topbarTitle.value = wpTitle.value;
       }
+    }
+    topbarTitle.addEventListener('input', () => {
+      if (wpTitle) wpTitle.value = topbarTitle.value;
+      if (schema) schema.title = topbarTitle.value.trim();
+      isDirty = true;
+    });
+    topbarTitle.addEventListener('change', () => {
+      if (wpTitle) wpTitle.value = topbarTitle.value;
+      if (schema) schema.title = topbarTitle.value.trim();
+      syncSchemaInput();
+    });
+  }
+
+  // Ensure schema and title are synced before form submission
+  if (postForm) {
+    postForm.addEventListener('submit', () => {
+      syncSchemaInput();
+      if (wpTitle && topbarTitle) {
+        wpTitle.value = topbarTitle.value;
+      }
+      isDirty = false;
+    });
+  }
+
+  // Top Bar Preview Button -> activates Preview Tab
+  const topbarPreviewBtn = root.querySelector('.nexley-topbar-preview-btn');
+  if (topbarPreviewBtn) {
+    topbarPreviewBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const previewTab = root.querySelector('.nexley-tab-btn[data-tab="preview"]');
+      if (previewTab) {
+        previewTab.click();
+        previewTab.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    });
+  }
+
+  // Top Bar Save Draft button
+  const draftBtn = root.querySelector('.nexley-topbar-draft-btn');
+  if (draftBtn) {
+    draftBtn.addEventListener('click', () => {
+      const statusInput = document.getElementById('post_status');
+      if (statusInput) statusInput.value = 'draft';
+      const hiddenStatusInput = document.getElementById('hidden_post_status');
+      if (hiddenStatusInput) hiddenStatusInput.value = 'draft';
+      isDirty = false;
+    });
+  }
+
+  // Top Bar Publish button
+  const publishBtn = root.querySelector('.nexley-topbar-publish-btn');
+  if (publishBtn) {
+    publishBtn.addEventListener('click', () => {
+      const statusInput = document.getElementById('post_status');
+      if (statusInput) statusInput.value = 'publish';
+      isDirty = false;
+    });
+  }
+
+  // Top Bar Update button
+  const updateBtn = root.querySelector('.nexley-topbar-save-btn');
+  if (updateBtn) {
+    updateBtn.addEventListener('click', () => {
+      const statusInput = document.getElementById('post_status');
+      if (statusInput) statusInput.value = 'publish';
+      isDirty = false;
+    });
+  }
+
+  // Top Bar Switch to Draft (Unpublish) button
+  const unpublishBtn = document.getElementById('nexley-btn-unpublish');
+  if (unpublishBtn) {
+    unpublishBtn.addEventListener('click', () => {
+      const statusInput = document.getElementById('post_status');
+      if (statusInput) statusInput.value = 'draft';
+      const hiddenStatusInput = document.getElementById('hidden_post_status');
+      if (hiddenStatusInput) hiddenStatusInput.value = 'draft';
+      isDirty = false;
     });
   }
 
@@ -1249,11 +1333,11 @@
         navigator.clipboard.writeText(sc).then(() => {
           copyBtn.classList.add('button-primary');
           const span = copyBtn.querySelector('span:last-child');
-          const orig = span.textContent;
-          span.textContent = 'Copied!';
+          const orig = span ? span.textContent : '';
+          if (span) span.textContent = 'Copied!';
           setTimeout(() => {
             copyBtn.classList.remove('button-primary');
-            span.textContent = orig;
+            if (span) span.textContent = orig;
           }, 1500);
         });
       }

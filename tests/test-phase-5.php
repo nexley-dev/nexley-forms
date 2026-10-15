@@ -27,6 +27,12 @@ class Phase5_Test {
             'checks' => [],
         ];
 
+        // Reset rate limits for test runner
+        $ip = Security::get_client_ip();
+        delete_transient('nexley_rate_' . md5($ip));
+        delete_transient('nexley_rate_' . md5('127.0.0.1'));
+        delete_transient('nexley_rate_' . md5(''));
+
         // 1. Test Honeypot (decoy / bot rejection)
         $hp_test = Security::verify_submission(
             ['_nexley_hp' => 'bot_value'],
